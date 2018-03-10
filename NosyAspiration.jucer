@@ -11,8 +11,19 @@
               pluginProducesMidiOut="0" pluginIsMidiEffectPlugin="0" pluginEditorRequiresKeys="0"
               pluginAUExportPrefix="NosyAspirationAU" pluginRTASCategory=""
               aaxIdentifier="com.yourcompany.NosyAspiration" pluginAAXCategory="AAX_ePlugInCategory_Dynamics"
-              jucerVersion="5.2.0">
+              jucerVersion="5.2.1">
   <MAINGROUP id="isGQd8" name="NosyAspiration">
+    <GROUP id="{873DEECD-B201-B1CF-35F5-D089D3468941}" name="SimplexNoise">
+      <FILE id="IepJLb" name="SimplexNoise.cpp" compile="1" resource="0"
+            file="Source/SimplexNoise.cpp"/>
+      <FILE id="Rib0Wg" name="SimplexNoise.h" compile="0" resource="0" file="Source/SimplexNoise.h"/>
+    </GROUP>
+    <GROUP id="{10928688-1544-CB03-13B9-888BFF48D2EE}" name="Glottis">
+      <FILE id="PZHDHo" name="Glottis.cpp" compile="1" resource="0" file="Source/Glottis.cpp"/>
+      <FILE id="Xp0aSW" name="Glottis.h" compile="0" resource="0" file="Source/Glottis.h"/>
+      <FILE id="dF7aY3" name="WaveformGen.cpp" compile="1" resource="0" file="Source/WaveformGen.cpp"/>
+      <FILE id="Y7oXg0" name="WaveformGen.h" compile="0" resource="0" file="Source/WaveformGen.h"/>
+    </GROUP>
     <GROUP id="{BA961BA5-35EA-60B5-18E2-2140209EAF20}" name="Source">
       <FILE id="HZ1r7i" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>

@@ -1,43 +1,38 @@
-//
-//  Glottis.h
-//  NosyAspiration
-//
-//  Created by zhao yan on 2/18/18.
-//
+/*
+  ==============================================================================
 
-#ifndef Glottis_h
-#define Glottis_h
+    Glottis.h
+    Created: 10 Mar 2018 3:25:27pm
+    Author:  zhao yan
 
+  ==============================================================================
+*/
 
-#endif /* Glottis_h */
-class Glottis {
+#pragma once
+
+#include "WaveformGen.h"
+
+class Glottis
+{
 public:
-    Glottis(int sample_rate, int buffer_size, int frequency, float tenseness);
+    enum GlottisParams {
+        k_intensity,
+        k_tenseness,
+        k_frequency,
+        k_vibrato_amount,
+        k_vibrato_freq,
+        k_num_params
+    };
+    Glottis(int sample_rate, int num_channels);
     ~Glottis();
-    float runStep(float lambda, float noiseSource);
-    
-    
+    float runStep(float lambda, float noise_source);
+    void prosess(float **input_buffer, float **output_buffer, int num_samples);
 private:
-    int sample_rate = 44100;
-    int buffer_size = 1024;
-    float tenseness = 0.6;
-    
-    struct wavformParam {
-        float frequency;
-        int   wavformlength;
-        float Rd;
-        float alpha;
-        float E0;
-        float epsilon;
-        float shift;
-        float delta;
-        float Te;
-        float omega;
-    }
+    int sample_rate;
+    int num_channels;
+    float params[k_num_params];
+    WavefromGen* waveform_gen;
     
     float getNoiseModulator();
-    float setupWaveform(float lambda, wavFormParam &wfp);
-    float normalizeWaveform(float time);
-    float finishBlock();
-    
-}
+    void finishBlock();
+};
