@@ -3,7 +3,7 @@
 
 #include "AudioFileIf.h"
 
-#define WITH_SNDLIB
+//#define WITH_SNDLIB
 
 /*! \brief open, read, and write raw audio files in 16 bit integer little endian format.
 */

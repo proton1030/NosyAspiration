@@ -19,6 +19,7 @@
       <FILE id="F8X9VI" name="AudioFileIf.cpp" compile="1" resource="0" file="Source/AudioFileIf.cpp"/>
       <FILE id="OSFN8w" name="AudioFileIf.h" compile="0" resource="0" file="Source/AudioFileIf.h"/>
       <FILE id="p4tPj5" name="ErrorDef.h" compile="0" resource="0" file="Source/ErrorDef.h"/>
+      <FILE id="NFtleC" name="Util.h" compile="0" resource="0" file="Source/Util.h"/>
       <FILE id="w0xpR3" name="Vector.h" compile="0" resource="0" file="Source/Vector.h"/>
     </GROUP>
     <GROUP id="{0006FD61-5ECC-F6B2-CE1D-F8DC5D83B90A}" name="Test">
