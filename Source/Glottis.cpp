@@ -14,7 +14,7 @@
 
 Glottis::Glottis(int sample_rate, int num_channels):
 sample_rate(sample_rate),
-num_channels(0)
+num_channels(num_channels)
 {
     waveform_gen = new WavefromGen(sample_rate);
 }
