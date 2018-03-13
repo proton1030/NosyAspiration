@@ -13,6 +13,17 @@
               aaxIdentifier="com.yourcompany.NosyAspiration" pluginAAXCategory="AAX_ePlugInCategory_Dynamics"
               jucerVersion="5.2.1">
   <MAINGROUP id="isGQd8" name="NosyAspiration">
+    <GROUP id="{2F70E78F-1601-01F1-6E45-39FADE0A1E94}" name="AudioFileIO">
+      <FILE id="ESyMYf" name="AudioFile.cpp" compile="1" resource="0" file="Source/AudioFile.cpp"/>
+      <FILE id="U6czLb" name="AudioFile.h" compile="0" resource="0" file="Source/AudioFile.h"/>
+      <FILE id="F8X9VI" name="AudioFileIf.cpp" compile="1" resource="0" file="Source/AudioFileIf.cpp"/>
+      <FILE id="OSFN8w" name="AudioFileIf.h" compile="0" resource="0" file="Source/AudioFileIf.h"/>
+      <FILE id="p4tPj5" name="ErrorDef.h" compile="0" resource="0" file="Source/ErrorDef.h"/>
+      <FILE id="w0xpR3" name="Vector.h" compile="0" resource="0" file="Source/Vector.h"/>
+    </GROUP>
+    <GROUP id="{0006FD61-5ECC-F6B2-CE1D-F8DC5D83B90A}" name="Test">
+      <FILE id="Ov2PQs" name="WavFileTest.cpp" compile="1" resource="0" file="Source/WavFileTest.cpp"/>
+    </GROUP>
     <GROUP id="{873DEECD-B201-B1CF-35F5-D089D3468941}" name="SimplexNoise">
       <FILE id="IepJLb" name="SimplexNoise.cpp" compile="1" resource="0"
             file="Source/SimplexNoise.cpp"/>
