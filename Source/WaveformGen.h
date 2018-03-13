@@ -30,7 +30,7 @@ private:
     float time_step;
     float time_in_waveform;
     float total_time;
-    int   waveform_length;
+    float   waveform_length;
     int   sample_rate = 44100;
     struct waveformParam {
         float Rd;

@@ -11,7 +11,7 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
-
+#include "Glottis.h"
 
 //==============================================================================
 /**
@@ -57,6 +57,7 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 private:
+    Glottis* m_glottis = 0;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NosyAspirationAudioProcessor)
 };

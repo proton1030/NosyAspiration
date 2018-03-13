@@ -14,10 +14,10 @@
 
 
 WavefromGen::WavefromGen(int sample_rate):
-time_in_waveform(0),
-sample_rate(sample_rate)
+time_in_waveform(0)
 {
-    time_step = 1 / sample_rate;
+    this->sample_rate = sample_rate;
+    time_step = 1.0f / sample_rate;
 }
 
 void WavefromGen::init(){
@@ -48,9 +48,9 @@ void WavefromGen::updateFreq(float new_frequency, float vibrato = 0) {
 }
 
 void WavefromGen::updateTenseness(float new_tenseness) {
-    pre_tenseness = cur_frequency;
-    cur_frequency = new_tenseness + 0.1 * SimplexNoise::simpleNoise1dWarper(total_time * 0.46) + 0.05 * SimplexNoise::simpleNoise1dWarper(total_time * 0.36);
-    
+    pre_tenseness = cur_tenseness;
+//    cur_tenseness = new_tenseness + 0.1 * SimplexNoise::simpleNoise1dWarper(total_time * 0.46) + 0.05 * SimplexNoise::simpleNoise1dWarper(total_time * 0.36);
+    cur_tenseness = new_tenseness;
 }
 
 float WavefromGen::runStep(float lambda) {
@@ -65,7 +65,7 @@ float WavefromGen::runStep(float lambda) {
 
 void WavefromGen::setupWaveform(float lambda) {
     float interpolated_freq = pre_frequency*(1-lambda) + cur_frequency*lambda;
-    float interpolated_tens = pre_tenseness*(1-lambda) + cur_frequency*lambda;
+    float interpolated_tens = pre_tenseness*(1-lambda) + cur_tenseness*lambda;
     waveformParam.Rd = 3*(1-interpolated_tens);
     this->waveform_length = 1 / interpolated_freq;
     float Rd = waveformParam.Rd;
@@ -111,5 +111,8 @@ void WavefromGen::setupWaveform(float lambda) {
 }
 
 float WavefromGen::normalizedWaveform (float t) {
-    return t > waveformParam.Te ? (-exp(-waveformParam.epsilon * (t-waveformParam.Te)) + waveformParam.shift)/waveformParam.delta : waveformParam.E0 * exp(waveformParam.alpha*t) * sin(waveformParam.omega * t);
+    float output = 0;
+    if (t>waveformParam.Te) output = (-exp(-waveformParam.epsilon * (t-waveformParam.Te)) + waveformParam.shift)/waveformParam.delta;
+    else output = waveformParam.E0 * exp(waveformParam.alpha*t) * sin(waveformParam.omega * t);
+    return output;
 }

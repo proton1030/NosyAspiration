@@ -11,6 +11,7 @@
 #pragma once
 
 #include "WaveformGen.h"
+#include <iostream>
 
 class Glottis
 {
@@ -25,8 +26,10 @@ public:
     };
     Glottis(int sample_rate, int num_channels);
     ~Glottis();
+    void SetParam(GlottisParams paramType, float paramVal);
     float runStep(float lambda, float noise_source);
     void prosess(float **input_buffer, float **output_buffer, int num_samples);
+    void prosess(float *input_buffer, float *output_buffer, int num_samples);
 private:
     int sample_rate;
     int num_channels;
