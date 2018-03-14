@@ -1,5 +1,11 @@
 # NosyAspiration
-An audio plugin sings with an audio input's pitch
+An audio effect plugin sings with an audio input's pitch. 
+
+### Functionality
+
+A syllable pronunciation macro editor interface which allows user to form their own words/sentences and accepts MIDI input controlling in real-time.
+
+A pitch tracker that can analyze monophonic audio input and map the extracted pitch to articulatory synthesis.
 
 ### The speech sythnesis
 
