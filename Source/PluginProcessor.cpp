@@ -30,7 +30,7 @@ NosyAspirationAudioProcessor::NosyAspirationAudioProcessor()
 
 NosyAspirationAudioProcessor::~NosyAspirationAudioProcessor()
 {
-    delete m_glottis;
+    delete m_CGlottis;
 }
 
 //==============================================================================
@@ -100,7 +100,8 @@ void NosyAspirationAudioProcessor::prepareToPlay (double sampleRate, int samples
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-    m_glottis = new Glottis(sampleRate, 2);
+    m_CGlottis = new Glottis(sampleRate, 2);
+    m_CTract = new Tract(sampleRate, 2, samplesPerBlock);
     
 }
 
@@ -152,23 +153,14 @@ void NosyAspirationAudioProcessor::processBlock (AudioSampleBuffer& buffer, Midi
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
     float* channelData = buffer.getWritePointer (0);
-    m_glottis->prosess(channelData, channelData, buffer.getNumSamples());
+    m_CGlottis->process(channelData, channelData, buffer.getNumSamples());
+    m_CTract->process(channelData, channelData, buffer.getNumSamples());
+    
     for (int channel = 1; channel < totalNumInputChannels; channel++) {
         float* other_channel_data = buffer.getWritePointer(channel);
-        memcpy(other_channel_data, channelData, sizeof(float)*buffer.getNumSamples());
+        memcpy(other_channel_data, channelData, sizeof(float) * buffer.getNumSamples());
     }
-//    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-//    {
-//        float* channelData = buffer.getWritePointer (channel);
-////        for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-////            float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-////            channelData[sample] = r;
-////        }
-//
-//
-//        m_glottis->prosess(channelData, channelData, buffer.getNumSamples());
-//        // ..do something to the data...
-//    }
+
 }
 
 //==============================================================================

@@ -24,12 +24,14 @@ public:
         k_vibrato_freq,
         k_num_params
     };
+    
     Glottis(int sample_rate, int num_channels);
     ~Glottis();
-    void SetParam(GlottisParams paramType, float paramVal);
+    void setParam(GlottisParams paramType, float paramVal);
+    float getParam(GlottisParams paramType);
     float runStep(float lambda, float noise_source);
-    void prosess(float **input_buffer, float **output_buffer, int num_samples);
-    void prosess(float *input_buffer, float *output_buffer, int num_samples);
+    void process(float **input_buffer, float **output_buffer, int num_samples);
+    void process(float *input_buffer, float *output_buffer, int num_samples);
 private:
     int sample_rate;
     int num_channels;

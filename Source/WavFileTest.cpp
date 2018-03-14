@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
     
     glottis_instance = new Glottis(sample_rate, num_channels);
     for (int i = 0; i < num_block; i++) {
-        glottis_instance->prosess(output_data, output_data, block_size);
+        glottis_instance->process(output_data, output_data, block_size);
         output_file->writeData(output_data, block_size);
     }
     

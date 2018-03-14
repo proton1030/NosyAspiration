@@ -18,19 +18,23 @@ num_channels(num_channels)
 {
     waveform_gen = new WavefromGen(sample_rate);
     waveform_gen->init();
-    SetParam(k_intensity, 1);
-    SetParam(k_frequency, 140);
-    SetParam(k_tenseness, 0.6);
-    SetParam(k_vibrato_freq, 6);
-    SetParam(k_vibrato_amount, 0.005);
+    setParam(k_intensity, 1);
+    setParam(k_frequency, 140);
+    setParam(k_tenseness, 0.6);
+    setParam(k_vibrato_freq, 6);
+    setParam(k_vibrato_amount, 0.005);
 }
 
 Glottis::~Glottis(){
     delete waveform_gen;
 }
 
-void Glottis::SetParam(Glottis::GlottisParams paramType, float paramVal) {
+void Glottis::setParam(Glottis::GlottisParams paramType, float paramVal) {
     params[paramType] = paramVal;
+}
+
+float Glottis::getParam(Glottis::GlottisParams paramType) {
+    return params[paramType];
 }
 
 float Glottis::getNoiseModulator() {
@@ -47,7 +51,7 @@ float Glottis::runStep(float lambda, float noise_source) {
     return wave_form_out;
 }
 
-void Glottis::prosess(float **input_buffer, float **output_buffer, int num_samples) {
+void Glottis::process(float **input_buffer, float **output_buffer, int num_samples) {
     for (int i = 0; i < num_channels; i++) {
         for (int j = 0; j < num_samples; j++) {
             float lambda = j / num_samples;
@@ -57,10 +61,11 @@ void Glottis::prosess(float **input_buffer, float **output_buffer, int num_sampl
     finishBlock();
 }
 
-void Glottis::prosess(float *input_buffer, float *output_buffer, int num_samples) {
+void Glottis::process(float *input_buffer, float *output_buffer, int num_samples) {
     for (int i = 0; i < num_samples; i++) {
         float lambda = (float)i / num_samples;
         output_buffer[i] = runStep(lambda, 0);
+//        std::cout << output_buffer[i] << std::endl;
     }
     finishBlock();
 }

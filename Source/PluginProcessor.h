@@ -12,6 +12,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Glottis.h"
+#include "Tract.h"
 
 //==============================================================================
 /**
@@ -55,9 +56,11 @@ public:
     //==============================================================================
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
-
+    
+    Glottis*    m_CGlottis = 0;
+    Tract*      m_CTract = 0;
 private:
-    Glottis* m_glottis = 0;
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NosyAspirationAudioProcessor)
 };
