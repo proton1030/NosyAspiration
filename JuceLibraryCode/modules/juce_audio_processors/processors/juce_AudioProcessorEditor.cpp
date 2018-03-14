@@ -46,7 +46,7 @@ AudioProcessorEditor::~AudioProcessorEditor()
     // if this fails, then the wrapper hasn't called editorBeingDeleted() on the
     // filter for some reason..
     jassert (processor.getActiveEditor() != this);
-    removeComponentListener (resizeListener.get());
+    removeComponentListener (resizeListener);
 }
 
 void AudioProcessorEditor::setControlHighlight (ParameterControlHighlightInfo) {}
@@ -77,8 +77,7 @@ void AudioProcessorEditor::initialise()
     resizable = false;
 
     attachConstrainer (&defaultConstrainer);
-    resizeListener.reset (new AudioProcessorEditorListener (*this));
-    addComponentListener (resizeListener.get());
+    addComponentListener (resizeListener = new AudioProcessorEditorListener (*this));
 }
 
 //==============================================================================
@@ -109,13 +108,12 @@ void AudioProcessorEditor::setResizable (const bool shouldBeResizable, const boo
     {
         if (shouldHaveCornerResizer)
         {
-            resizableCorner.reset (new ResizableCornerComponent (this, constrainer));
-            Component::addChildComponent (resizableCorner.get());
+            Component::addChildComponent (resizableCorner = new ResizableCornerComponent (this, constrainer));
             resizableCorner->setAlwaysOnTop (true);
         }
         else
         {
-            resizableCorner.reset();
+            resizableCorner = nullptr;
         }
     }
 }

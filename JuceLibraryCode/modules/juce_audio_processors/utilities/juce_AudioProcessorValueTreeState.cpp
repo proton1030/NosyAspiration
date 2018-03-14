@@ -37,9 +37,8 @@ struct AudioProcessorValueTreeState::Parameter   : public AudioProcessorParamete
                std::function<float (const String&)> textToValue,
                bool meta,
                bool automatable,
-               bool discrete,
-               AudioProcessorParameter::Category category)
-        : AudioProcessorParameterWithID (parameterID, paramName, labelText, category),
+               bool discrete)
+        : AudioProcessorParameterWithID (parameterID, paramName, labelText),
           owner (s), valueToTextFunction (valueToText), textToValueFunction (textToValue),
           range (r), value (defaultVal), defaultValue (defaultVal),
           listenersNeedCalling (true),
@@ -88,7 +87,7 @@ struct AudioProcessorValueTreeState::Parameter   : public AudioProcessorParamete
         {
             value = newValue;
 
-            listeners.call ([=] (AudioProcessorValueTreeState::Listener& l) { l.parameterChanged (paramID, value); });
+            listeners.call (&AudioProcessorValueTreeState::Listener::parameterChanged, paramID, value);
             listenersNeedCalling = false;
 
             needsUpdate.set (1);
@@ -134,13 +133,17 @@ struct AudioProcessorValueTreeState::Parameter   : public AudioProcessorParamete
 
     static Parameter* getParameterForID (AudioProcessor& processor, StringRef paramID) noexcept
     {
-        for (auto* ap : processor.getParameters())
+        const int numParams = processor.getParameters().size();
+
+        for (int i = 0; i < numParams; ++i)
         {
+            AudioProcessorParameter* const ap = processor.getParameters().getUnchecked(i);
+
             // When using this class, you must allow it to manage all the parameters in your AudioProcessor, and
             // not add any parameter objects of other types!
             jassert (dynamic_cast<Parameter*> (ap) != nullptr);
 
-            auto* p = static_cast<Parameter*> (ap);
+            Parameter* const p = static_cast<Parameter*> (ap);
 
             if (paramID == p->paramID)
                 return p;
@@ -169,7 +172,12 @@ struct AudioProcessorValueTreeState::Parameter   : public AudioProcessorParamete
 
 //==============================================================================
 AudioProcessorValueTreeState::AudioProcessorValueTreeState (AudioProcessor& p, UndoManager* um)
-    : processor (p), undoManager (um)
+    : processor (p),
+      undoManager (um),
+      valueType ("PARAM"),
+      valuePropertyID ("value"),
+      idPropertyID ("id"),
+      updatingConnections (false)
 {
     startTimerHz (10);
     state.addListener (this);
@@ -183,8 +191,7 @@ AudioProcessorParameterWithID* AudioProcessorValueTreeState::createAndAddParamet
                                                                                     std::function<float (const String&)> textToValueFunction,
                                                                                     bool isMetaParameter,
                                                                                     bool isAutomatableParameter,
-                                                                                    bool isDiscreteParameter,
-                                                                                    AudioProcessorParameter::Category category)
+                                                                                    bool isDiscreteParameter)
 {
     // All parameters must be created before giving this manager a ValueTree state!
     jassert (! state.isValid());
@@ -192,7 +199,7 @@ AudioProcessorParameterWithID* AudioProcessorValueTreeState::createAndAddParamet
     Parameter* p = new Parameter (*this, paramID, paramName, labelText, r,
                                   defaultVal, valueToTextFunction, textToValueFunction,
                                   isMetaParameter, isAutomatableParameter,
-                                  isDiscreteParameter, category);
+                                  isDiscreteParameter);
     processor.addParameter (p);
     return p;
 }
@@ -238,20 +245,6 @@ float* AudioProcessorValueTreeState::getRawParameterValue (StringRef paramID) co
     return nullptr;
 }
 
-ValueTree AudioProcessorValueTreeState::copyState()
-{
-    ScopedLock lock (valueTreeChanging);
-
-    return state.createCopy();
-}
-
-void AudioProcessorValueTreeState::replaceState (const ValueTree& newState)
-{
-    ScopedLock lock (valueTreeChanging);
-
-    state = newState;
-}
-
 ValueTree AudioProcessorValueTreeState::getOrCreateChildValueTree (const String& paramID)
 {
     ValueTree v (state.getChildWithProperty (idPropertyID, paramID));
@@ -260,7 +253,7 @@ ValueTree AudioProcessorValueTreeState::getOrCreateChildValueTree (const String&
     {
         v = ValueTree (valueType);
         v.setProperty (idPropertyID, paramID, undoManager);
-        state.appendChild (v, undoManager);
+        state.addChild (v, -1, undoManager);
     }
 
     return v;
@@ -268,14 +261,20 @@ ValueTree AudioProcessorValueTreeState::getOrCreateChildValueTree (const String&
 
 void AudioProcessorValueTreeState::updateParameterConnectionsToChildTrees()
 {
-    ScopedLock lock (valueTreeChanging);
-
-    for (auto* param : processor.getParameters())
+    if (! updatingConnections)
     {
-        jassert (dynamic_cast<Parameter*> (param) != nullptr);
-        auto* p = static_cast<Parameter*> (param);
+        ScopedValueSetter<bool> svs (updatingConnections, true, false);
 
-        p->setNewState (getOrCreateChildValueTree (p->paramID));
+        const int numParams = processor.getParameters().size();
+
+        for (int i = 0; i < numParams; ++i)
+        {
+            AudioProcessorParameter* const ap = processor.getParameters().getUnchecked(i);
+            jassert (dynamic_cast<Parameter*> (ap) != nullptr);
+
+            Parameter* p = static_cast<Parameter*> (ap);
+            p->setNewState (getOrCreateChildValueTree (p->paramID));
+        }
     }
 }
 
@@ -288,15 +287,13 @@ void AudioProcessorValueTreeState::valueTreePropertyChanged (ValueTree& tree, co
 void AudioProcessorValueTreeState::valueTreeChildAdded (ValueTree& parent, ValueTree& tree)
 {
     if (parent == state && tree.hasType (valueType))
-        if (auto* param = Parameter::getParameterForID (processor, tree.getProperty (idPropertyID).toString()))
-            param->setNewState (getOrCreateChildValueTree (param->paramID));
+        updateParameterConnectionsToChildTrees();
 }
 
 void AudioProcessorValueTreeState::valueTreeChildRemoved (ValueTree& parent, ValueTree& tree, int)
 {
     if (parent == state && tree.hasType (valueType))
-        if (auto* param = Parameter::getParameterForID (processor, tree.getProperty (idPropertyID).toString()))
-            param->setNewState (getOrCreateChildValueTree (param->paramID));
+        updateParameterConnectionsToChildTrees();
 }
 
 void AudioProcessorValueTreeState::valueTreeRedirected (ValueTree& v)
@@ -308,16 +305,17 @@ void AudioProcessorValueTreeState::valueTreeRedirected (ValueTree& v)
 void AudioProcessorValueTreeState::valueTreeChildOrderChanged (ValueTree&, int, int) {}
 void AudioProcessorValueTreeState::valueTreeParentChanged (ValueTree&) {}
 
-bool AudioProcessorValueTreeState::flushParameterValuesToValueTree()
+void AudioProcessorValueTreeState::timerCallback()
 {
-    ScopedLock lock (valueTreeChanging);
+    const int numParams = processor.getParameters().size();
+    bool anythingUpdated = false;
 
-    auto anythingUpdated = false;
-
-    for (auto* ap : processor.getParameters())
+    for (int i = 0; i < numParams; ++i)
     {
+        AudioProcessorParameter* const ap = processor.getParameters().getUnchecked(i);
         jassert (dynamic_cast<Parameter*> (ap) != nullptr);
-        auto* p = static_cast<Parameter*> (ap);
+
+        Parameter* p = static_cast<Parameter*> (ap);
 
         if (p->needsUpdate.compareAndSetBool (0, 1))
         {
@@ -325,13 +323,6 @@ bool AudioProcessorValueTreeState::flushParameterValuesToValueTree()
             anythingUpdated = true;
         }
     }
-
-    return anythingUpdated;
-}
-
-void AudioProcessorValueTreeState::timerCallback()
-{
-    auto anythingUpdated = flushParameterValuesToValueTree();
 
     startTimer (anythingUpdated ? 1000 / 50
                                 : jlimit (50, 500, getTimerInterval() + 20));
@@ -360,7 +351,7 @@ struct AttachedControlBase  : public AudioProcessorValueTreeState::Listener,
         if (AudioProcessorParameter* p = state.getParameter (paramID))
         {
             const float newValue = state.getParameterRange (paramID)
-                                        .convertTo0to1 (newUnnormalisedValue);
+                                      .convertTo0to1 (newUnnormalisedValue);
 
             if (p->getValue() != newValue)
                 p->setValueNotifyingHost (newValue);
