@@ -153,7 +153,10 @@ void NosyAspirationAudioProcessor::processBlock (AudioSampleBuffer& buffer, Midi
     // audio processing...
     float* channelData = buffer.getWritePointer (0);
     m_glottis->prosess(channelData, channelData, buffer.getNumSamples());
-    
+    for (int channel = 1; channel < totalNumInputChannels; channel++) {
+        float* other_channel_data = buffer.getWritePointer(channel);
+        memcpy(other_channel_data, channelData, sizeof(float)*buffer.getNumSamples());
+    }
 //    for (int channel = 0; channel < totalNumInputChannels; ++channel)
 //    {
 //        float* channelData = buffer.getWritePointer (channel);
