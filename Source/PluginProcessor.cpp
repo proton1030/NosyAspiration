@@ -151,20 +151,21 @@ void NosyAspirationAudioProcessor::processBlock (AudioSampleBuffer& buffer, Midi
 
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
+    float* channelData = buffer.getWritePointer (0);
+    m_glottis->prosess(channelData, channelData, buffer.getNumSamples());
     
-    
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        float* channelData = buffer.getWritePointer (channel);
-//        for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-//            float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-//            channelData[sample] = r;
-//        }
-        
-        
-        m_glottis->prosess(channelData, channelData, buffer.getNumSamples());
-        // ..do something to the data...
-    }
+//    for (int channel = 0; channel < totalNumInputChannels; ++channel)
+//    {
+//        float* channelData = buffer.getWritePointer (channel);
+////        for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
+////            float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+////            channelData[sample] = r;
+////        }
+//
+//
+//        m_glottis->prosess(channelData, channelData, buffer.getNumSamples());
+//        // ..do something to the data...
+//    }
 }
 
 //==============================================================================

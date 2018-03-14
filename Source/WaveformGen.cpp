@@ -49,7 +49,7 @@ void WavefromGen::updateFreq(float new_frequency, float vibrato = 0) {
 
 void WavefromGen::updateTenseness(float new_tenseness) {
     pre_tenseness = cur_tenseness;
-//    cur_tenseness = new_tenseness + 0.1 * SimplexNoise::simpleNoise1dWarper(total_time * 0.46) + 0.05 * SimplexNoise::simpleNoise1dWarper(total_time * 0.36);
+    cur_tenseness = new_tenseness + 0.1 * SimplexNoise::simpleNoise1dWarper(total_time * 0.46) + 0.05 * SimplexNoise::simpleNoise1dWarper(total_time * 0.36);
     cur_tenseness = new_tenseness;
 }
 
@@ -111,8 +111,5 @@ void WavefromGen::setupWaveform(float lambda) {
 }
 
 float WavefromGen::normalizedWaveform (float t) {
-    float output = 0;
-    if (t>waveformParam.Te) output = (-exp(-waveformParam.epsilon * (t-waveformParam.Te)) + waveformParam.shift)/waveformParam.delta;
-    else output = waveformParam.E0 * exp(waveformParam.alpha*t) * sin(waveformParam.omega * t);
-    return output;
+    return (t>waveformParam.Te) ? (-exp(-waveformParam.epsilon * (t-waveformParam.Te)) + waveformParam.shift)/waveformParam.delta:waveformParam.E0 * exp(waveformParam.alpha*t) * sin(waveformParam.omega * t);
 }

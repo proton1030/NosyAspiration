@@ -11,7 +11,7 @@
               pluginProducesMidiOut="0" pluginIsMidiEffectPlugin="0" pluginEditorRequiresKeys="0"
               pluginAUExportPrefix="NosyAspirationAU" pluginRTASCategory=""
               aaxIdentifier="com.yourcompany.NosyAspiration" pluginAAXCategory="AAX_ePlugInCategory_Dynamics"
-              jucerVersion="5.2.0">
+              jucerVersion="5.2.1">
   <MAINGROUP id="isGQd8" name="NosyAspiration">
     <GROUP id="{B77C10AB-27D4-CE46-1DE9-A9FC4BF166DD}" name="Tract">
       <FILE id="blX2rO" name="Tract.cpp" compile="1" resource="0" file="Source/Tract.cpp"/>
