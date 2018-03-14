@@ -39,7 +39,7 @@
 #endif
 
 #ifndef JUCE_SUPPORTS_AUv3
- #if __OBJC2__ \
+ #if JUCE_COMPILER_SUPPORTS_VARIADIC_TEMPLATES && __OBJC2__  \
       &&  ((defined (MAC_OS_X_VERSION_MIN_REQUIRED)    && defined (MAC_OS_X_VERSION_10_11) && (MAC_OS_X_VERSION_MIN_REQUIRED    >= MAC_OS_X_VERSION_10_11)) \
        ||  (defined (__IPHONE_OS_VERSION_MIN_REQUIRED) && defined (__IPHONE_9_0)           && (__IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_9_0)))
   #define JUCE_SUPPORTS_AUv3 1
@@ -787,9 +787,9 @@ public:
         for (int i = 0; i < getBusCount (false); ++i)  AudioUnitReset (audioUnit, kAudioUnitScope_Output, static_cast<UInt32> (i));
     }
 
-    void processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override
+    void processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages) override
     {
-        auto numSamples = buffer.getNumSamples();
+        const int numSamples = buffer.getNumSamples();
 
         if (prepared)
         {
@@ -816,7 +816,6 @@ public:
             {
                 int chIdx = 0;
                 numOutputBuses = getBusCount (false);
-
                 for (int i = 0; i < numOutputBuses; ++i)
                 {
                     if (AUBuffer* buf = outputBufferList[i])
@@ -991,7 +990,7 @@ public:
         ev.mArgument.mParameter.mScope       = kAudioUnitScope_Global;
         ev.mArgument.mParameter.mElement     = 0;
 
-        AUEventListenerNotify (eventListenerRef, nullptr, &ev);
+        AUEventListenerNotify (nullptr, nullptr, &ev);
        #else
         ignoreUnused (index);
        #endif
@@ -1299,7 +1298,7 @@ private:
 
     OwnedArray<AUBuffer> outputBufferList;
     AudioTimeStamp timeStamp;
-    AudioBuffer<float>* currentBuffer;
+    AudioSampleBuffer* currentBuffer;
     Array<Array<AudioChannelSet>> supportedInLayouts, supportedOutLayouts;
 
     int numChannelInfos;
@@ -1465,9 +1464,10 @@ private:
         {
             // if this ever happens, might need to add extra handling
             jassert (inNumberFrames == (UInt32) currentBuffer->getNumSamples());
-            auto buffer = static_cast<int> (inBusNumber) < getBusCount (true)
-                             ? getBusBuffer (*currentBuffer, true, static_cast<int> (inBusNumber))
-                             : AudioBuffer<float>();
+            AudioSampleBuffer buffer =
+                (static_cast<int> (inBusNumber) < getBusCount (true)
+                    ? getBusBuffer (*currentBuffer, true, static_cast<int> (inBusNumber))
+                    : AudioSampleBuffer());
 
             for (int i = 0; i < static_cast<int> (ioData->mNumberBuffers); ++i)
             {
@@ -2223,7 +2223,7 @@ AudioProcessorEditor* AudioUnitPluginInstance::createEditor()
     ScopedPointer<AudioProcessorEditor> w (new AudioUnitPluginWindowCocoa (*this, false));
 
     if (! static_cast<AudioUnitPluginWindowCocoa*> (w.get())->isValid())
-        w.reset();
+        w = nullptr;
 
    #if JUCE_SUPPORT_CARBON
     if (w == nullptr)
@@ -2236,7 +2236,7 @@ AudioProcessorEditor* AudioUnitPluginInstance::createEditor()
    #endif
 
     if (w == nullptr)
-        w.reset (new AudioUnitPluginWindowCocoa (*this, true)); // use AUGenericView as a fallback
+        w = new AudioUnitPluginWindowCocoa (*this, true); // use AUGenericView as a fallback
 
     return w.release();
 }

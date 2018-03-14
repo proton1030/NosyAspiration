@@ -62,7 +62,6 @@ public:
 
     /** Type iteration. */
     PluginDescription** begin() const noexcept                      { return types.begin(); }
-
     /** Type iteration. */
     PluginDescription** end() const noexcept                        { return types.end(); }
 

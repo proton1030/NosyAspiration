@@ -11,8 +11,12 @@
               pluginProducesMidiOut="0" pluginIsMidiEffectPlugin="0" pluginEditorRequiresKeys="0"
               pluginAUExportPrefix="NosyAspirationAU" pluginRTASCategory=""
               aaxIdentifier="com.yourcompany.NosyAspiration" pluginAAXCategory="AAX_ePlugInCategory_Dynamics"
-              jucerVersion="5.2.1">
+              jucerVersion="5.2.0">
   <MAINGROUP id="isGQd8" name="NosyAspiration">
+    <GROUP id="{B77C10AB-27D4-CE46-1DE9-A9FC4BF166DD}" name="Tract">
+      <FILE id="blX2rO" name="Tract.cpp" compile="1" resource="0" file="Source/Tract.cpp"/>
+      <FILE id="WP3401" name="Tract.h" compile="0" resource="0" file="Source/Tract.h"/>
+    </GROUP>
     <GROUP id="{2F70E78F-1601-01F1-6E45-39FADE0A1E94}" name="AudioFileIO">
       <FILE id="ESyMYf" name="AudioFile.cpp" compile="1" resource="0" file="Source/AudioFile.cpp"/>
       <FILE id="U6czLb" name="AudioFile.h" compile="0" resource="0" file="Source/AudioFile.h"/>

@@ -169,8 +169,8 @@ static void setStateForAllBusesOfType (Vst::IComponent* component,
 }
 
 //==============================================================================
-/** Assigns a complete AudioBuffer's channels to an AudioBusBuffers' */
-static void associateWholeBufferTo (Vst::AudioBusBuffers& vstBuffers, AudioBuffer<float>& buffer) noexcept
+/** Assigns a complete AudioSampleBuffer's channels to an AudioBusBuffers' */
+static void associateWholeBufferTo (Vst::AudioBusBuffers& vstBuffers, AudioSampleBuffer& buffer) noexcept
 {
     vstBuffers.channelBuffers32 = buffer.getArrayOfWritePointers();
     vstBuffers.numChannels      = buffer.getNumChannels();
@@ -244,6 +244,103 @@ static void toProcessContext (Vst::ProcessContext& context, AudioPlayHead* playH
 
     if (context.timeSigNumerator > 0 && context.timeSigDenominator > 0)
         context.state |= ProcessContext::kTimeSigValid;
+}
+
+//==============================================================================
+/** Get a list of speaker arrangements as per their speaker names
+
+    (e.g.: 2 regular channels, aliased as 'kStringStereoS', is "L R")
+*/
+static StringArray getSpeakerArrangements()
+{
+    using namespace Vst::SpeakerArr;
+
+    const Vst::CString arrangements[] =
+    {
+        kStringMonoS,       kStringStereoS,         kStringStereoRS,    kStringStereoCS,
+        kStringStereoSS,    kStringStereoCLfeS,     kString30CineS,     kString30MusicS,
+        kString31CineS,     kString31MusicS,        kString40CineS,     kString40MusicS,
+        kString41CineS,     kString41MusicS,        kString50S,         kString51S,
+        kString60CineS,     kString60MusicS,        kString61CineS,     kString61MusicS,
+        kString70CineS,     kString70MusicS,        kString71CineS,     kString71MusicS,
+        kString80CineS,     kString80MusicS,        kString81CineS,     kString81MusicS,
+        kString80CubeS,             kStringBFormat1stOrderS,    kString71CineTopCenterS,
+        kString71CineCenterHighS,   kString71CineFrontHighS,    kString71CineSideHighS,
+        kString71CineFullRearS,     kString90S,                 kString91S,
+        kString100S,        kString101S,            kString110S,        kString111S,
+        kString130S,        kString131S,            kString102S,        kString122S,
+        nullptr
+    };
+
+    return StringArray (arrangements);
+}
+
+/** Get a list of speaker arrangements as per their named configurations
+
+    (e.g.: 2 regular channels, aliased as 'kStringStereoS', is "L R")
+*/
+static StringArray getNamedSpeakerArrangements()
+{
+    using namespace Vst::SpeakerArr;
+
+    const Vst::CString arrangements[] =
+    {
+        kStringEmpty,       kStringMono,            kStringStereo,              kStringStereoR,
+        kStringStereoC,     kStringStereoSide,      kStringStereoCLfe,          kString30Cine,
+        kString30Music,     kString31Cine,          kString31Music,             kString40Cine,
+        kString40Music,     kString41Cine,          kString41Music,             kString50,
+        kString51,          kString60Cine,          kString60Music,             kString61Cine,
+        kString61Music,     kString70Cine,          kString70Music,             kString71Cine,
+        kString71Music,     kString71CineTopCenter, kString71CineCenterHigh,
+        kString71CineFrontHigh,         kString71CineSideHigh,          kString71CineFullRear,
+        kString80Cine,      kString80Music,         kString80Cube,              kString81Cine,
+        kString81Music,     kString102,             kString122,                 kString90,
+        kString91,          kString100,             kString101,                 kString110,
+        kString111,         kString130,             kString131,
+        nullptr
+    };
+
+    return StringArray (arrangements);
+}
+
+static Vst::SpeakerArrangement getSpeakerArrangementFrom (const String& string)
+{
+    return Vst::SpeakerArr::getSpeakerArrangementFromString (string.toUTF8());
+}
+
+//==============================================================================
+static StringArray getPluginEffectCategories()
+{
+    using namespace Vst::PlugType;
+
+    const Vst::CString categories[] =
+    {
+        kFxAnalyzer,            kFxDelay,       kFxDistortion,      kFxDynamics,
+        kFxEQ,                  kFxFilter,      kFx,                kFxInstrument,
+        kFxInstrumentExternal,  kFxSpatial,     kFxGenerator,       kFxMastering,
+        kFxModulation,          kFxPitchShift,  kFxRestoration,     kFxReverb,
+        kFxSurround,            kFxTools,       kSpatial,           kSpatialFx,
+        nullptr
+    };
+
+    return StringArray (categories);
+}
+
+static StringArray getPluginInstrumentCategories()
+{
+    using namespace Vst::PlugType;
+
+    const Vst::CString categories[] =
+    {
+        kInstrumentSynthSampler,    kInstrumentDrum,
+        kInstrumentSampler,         kInstrumentSynth,
+        kInstrumentExternal,        kFxInstrument,
+        kFxInstrumentExternal,      kFxSpatial,
+        kFxGenerator,
+        nullptr
+    };
+
+    return StringArray (categories);
 }
 
 //==============================================================================
@@ -897,14 +994,14 @@ struct DescriptionFactory
 
                 if (pf2.loadFrom (factory))
                 {
-                    info2.reset (new PClassInfo2());
-                    pf2->getClassInfo2 (i, info2.get());
+                    info2 = new PClassInfo2();
+                    pf2->getClassInfo2 (i, info2);
                 }
 
                 if (pf3.loadFrom (factory))
                 {
-                    infoW.reset (new PClassInfoW());
-                    pf3->getClassInfoUnicode (i, infoW.get());
+                    infoW = new PClassInfoW();
+                    pf3->getClassInfoUnicode (i, infoW);
                 }
             }
 
@@ -923,7 +1020,7 @@ struct DescriptionFactory
                         auto numOutputs = getNumSingleDirectionChannelsFor (component, false, true);
 
                         createPluginDescription (desc, file, companyName, name,
-                                                 info, info2.get(), infoW.get(), numInputs, numOutputs);
+                                                 info, info2, infoW, numInputs, numOutputs);
 
                         component->terminate();
                     }
@@ -1246,7 +1343,7 @@ private:
     //==============================================================================
     bool open (const File& f, const PluginDescription& description)
     {
-        dllHandle.reset (new DLLHandle (f.getFullPathName()));
+        dllHandle = new DLLHandle (f.getFullPathName());
 
         ComSmartPtr<IPluginFactory> pluginFactory (dllHandle->getPluginFactory());
 
@@ -1572,23 +1669,23 @@ struct VST3ComponentHolder
 
             if (pf2.loadFrom (factory))
             {
-                info2.reset (new PClassInfo2());
-                pf2->getClassInfo2 (classIdx, info2.get());
+                info2 = new PClassInfo2();
+                pf2->getClassInfo2 (classIdx, info2);
             }
             else
             {
-                info2.reset();
+                info2 = nullptr;
             }
 
             if (pf3.loadFrom (factory))
             {
                 pf3->setHostContext (host->getFUnknown());
-                infoW.reset (new PClassInfoW());
-                pf3->getClassInfoUnicode (classIdx, infoW.get());
+                infoW = new PClassInfoW();
+                pf3->getClassInfoUnicode (classIdx, infoW);
             }
             else
             {
-                infoW.reset();
+                infoW = nullptr;
             }
 
             Vst::BusInfo bus;
@@ -1606,7 +1703,7 @@ struct VST3ComponentHolder
 
             createPluginDescription (description, module->file,
                                      factoryInfo.vendor, module->name,
-                                     info, info2.get(), infoW.get(),
+                                     info, info2, infoW,
                                      totalNumInputChannels,
                                      totalNumOutputChannels);
 
@@ -1640,8 +1737,6 @@ struct VST3ComponentHolder
 
         if (! component.loadFrom (factory, info.cid) || component == nullptr)
             return false;
-
-        cidOfComponent = FUID (info.cid);
 
         if (warnOnFailure (component->initialize (host->getFUnknown())) != kResultOk)
             return false;
@@ -1677,7 +1772,6 @@ struct VST3ComponentHolder
     ComSmartPtr<IPluginFactory> factory;
     ComSmartPtr<VST3HostContext> host;
     ComSmartPtr<Vst::IComponent> component;
-    FUID cidOfComponent;
 
     bool isComponentInitialised = false;
 };
@@ -1710,9 +1804,7 @@ struct VST3PluginInstance : public AudioPluginInstance
 
         editController->setComponentHandler (nullptr);
 
-        if (isControllerInitialised)
-            editController->terminate();
-
+        if (isControllerInitialised)    editController->terminate();
         holder->terminate();
 
         componentConnection = nullptr;
@@ -1918,24 +2010,6 @@ struct VST3PluginInstance : public AudioPluginInstance
 
         processor->process (data);
 
-        for (auto* q : outputParameterChanges->queues)
-        {
-            if (editController != nullptr)
-            {
-                auto numPoints = q->getPointCount();
-
-                if (numPoints > 0)
-                {
-                    Steinberg::int32 sampleOffset;
-                    Steinberg::Vst::ParamValue value;
-                    q->getPoint (numPoints - 1, sampleOffset, value);
-                    editController->setParamNormalized (q->getParameterId(), value);
-                }
-            }
-
-            q->clear();
-        }
-
         MidiEventList::toMidiBuffer (midiMessages, *midiOutputs);
 
         inputParameterChanges->clearAllQueues();
@@ -2121,8 +2195,8 @@ struct VST3PluginInstance : public AudioPluginInstance
                  && getBusInfo (false, true, busIdx).channelCount == 2;
     }
 
-    bool acceptsMidi() const override    { return getNumSingleDirectionBusesFor (holder->component, true,  false) > 0; }
-    bool producesMidi() const override   { return getNumSingleDirectionBusesFor (holder->component, false, false) > 0; }
+    bool acceptsMidi() const override    { return getBusInfo (true,  false).channelCount > 0; }
+    bool producesMidi() const override   { return getBusInfo (false, false).channelCount > 0; }
 
     //==============================================================================
     /** May return a negative value as a means of informing us that the plugin has "infinite tail," or 0 for "no tail." */
@@ -2209,17 +2283,6 @@ struct VST3PluginInstance : public AudioPluginInstance
         }
 
         return false;
-    }
-
-    bool isParameterAutomatable (int parameterIndex) const override
-    {
-        if (editController != nullptr)
-        {
-            auto flags = getParameterInfoForIndex (parameterIndex).flags;
-            return (flags & Steinberg::Vst::ParameterInfo::kCanAutomate) != 0;
-        }
-
-        return true;
     }
 
     float getParameter (int parameterIndex) override
@@ -2313,17 +2376,6 @@ struct VST3PluginInstance : public AudioPluginInstance
                     editController->setState (controllerStream);
             }
         }
-    }
-
-    bool setStateFromPresetFile (const MemoryBlock& rawData)
-    {
-        ComSmartPtr<Steinberg::MemoryStream> memoryStream = new Steinberg::MemoryStream (rawData.getData(), (int) rawData.getSize());
-
-        if (memoryStream == nullptr || holder->component == nullptr)
-            return false;
-
-        return Steinberg::Vst::PresetFile::loadPreset (memoryStream, holder->cidOfComponent,
-                                                       holder->component, editController, nullptr);
     }
 
     //==============================================================================
@@ -2809,14 +2861,6 @@ AudioPluginInstance* VST3Classes::VST3ComponentHolder::createPluginInstance()
 VST3PluginFormat::VST3PluginFormat() {}
 VST3PluginFormat::~VST3PluginFormat() {}
 
-bool VST3PluginFormat::setStateFromVSTPresetFile (AudioPluginInstance* api, const MemoryBlock& rawData)
-{
-    if (auto vst3 = dynamic_cast<VST3Classes::VST3PluginInstance*> (api))
-        return vst3->setStateFromPresetFile (rawData);
-
-    return false;
-}
-
 void VST3PluginFormat::findAllTypesForFile (OwnedArray<PluginDescription>& results, const String& fileOrIdentifier)
 {
     if (fileMightContainThisPluginType (fileOrIdentifier))
@@ -2837,14 +2881,14 @@ void VST3PluginFormat::createPluginInstance (const PluginDescription& descriptio
 
         if (const VST3Classes::VST3ModuleHandle::Ptr module = VST3Classes::VST3ModuleHandle::findOrCreateModule (file, description))
         {
-            ScopedPointer<VST3Classes::VST3ComponentHolder> holder (new VST3Classes::VST3ComponentHolder (module));
+            ScopedPointer<VST3Classes::VST3ComponentHolder> holder = new VST3Classes::VST3ComponentHolder (module);
 
             if (holder->initialise())
             {
-                result.reset (new VST3Classes::VST3PluginInstance (holder.release()));
+                result = new VST3Classes::VST3PluginInstance (holder.release());
 
                 if (! result->initialise())
-                    result.reset();
+                    result = nullptr;
             }
         }
 
