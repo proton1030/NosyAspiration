@@ -13,6 +13,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Glottis.h"
 #include "Tract.h"
+#include "PitchTrack.h"
 
 //==============================================================================
 /**
@@ -59,6 +60,7 @@ public:
     
     Glottis*    m_CGlottis = 0;
     Tract*      m_CTract = 0;
+    PitchTrack* m_CPitchTrak = 0;
 private:
 
     //==============================================================================

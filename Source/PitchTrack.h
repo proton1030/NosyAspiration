@@ -17,7 +17,7 @@ public:
     PitchTrack();
     ~PitchTrack();
     void init(int blockLength, int sampleRate);
-    int getPitch(float* inputBuff);
+    float getFundamentalFreq(float* inputBuff);
 private:
     FFT* m_fft;
     int m_blockLength;

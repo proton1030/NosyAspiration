@@ -12,8 +12,17 @@
 #include <cmath>
 PitchTrack::PitchTrack()
 {
-//    fft = new dsp::FFT(3);
+
 }
+
+PitchTrack::~PitchTrack()
+{
+    delete [] m_acfBuff;
+    delete [] m_fftBuff;
+    m_fft->~FFT();
+}
+
+
 void PitchTrack::init(int blockLength, int sampleRate) {
     m_blockLength = blockLength;
     m_sampleRate = sampleRate;
@@ -23,17 +32,30 @@ void PitchTrack::init(int blockLength, int sampleRate) {
     m_fftBuff = new float[m_fftSize];
     m_acfBuff = new float[m_fftSize/2];
 }
+
 void PitchTrack::computeAcf(float *inputBuff) {
     memcpy(m_fftBuff, inputBuff, sizeof(float) * m_fftSize / 2);
     m_fft->performRealOnlyForwardTransform(m_fftBuff);
     for (int i = 0; i < m_fftSize; i++) {
-        inputBuff[i] = - inputBuff[i] * inputBuff[i];
+        m_fftBuff[i] = m_fftBuff[i] * m_fftBuff[i] * (1 - 2 * (i%2)); //calculating conjugate
     }
     m_fft->performRealOnlyInverseTransform(m_fftBuff);
     memcpy(m_acfBuff, m_fftBuff, sizeof(float) * m_fftSize / 2);
 }
-int PitchTrack::getPitch(float *inputBuff) {
+
+float PitchTrack::getFundamentalFreq(float *inputBuff) {
     computeAcf(inputBuff);
+    for (int i = 0; i < m_fftSize/2-1; i++) {
+        m_acfBuff[i] = m_acfBuff[i+1] - m_acfBuff[i];
+    }
+    int t_init = 0;
+    for (int i= 1; i < m_fftSize/2-1; i++) {
+        if (m_acfBuff[i-1] >= 0 && m_acfBuff[i] < 0) {
+            t_init = i;
+            break;
+        }
+    }
+    float f0 = m_sampleRate / (t_init - 1); // for beakpoint now
     
-    return 0;
+    return f0;
 }

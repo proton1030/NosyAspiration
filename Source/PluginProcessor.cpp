@@ -102,7 +102,8 @@ void NosyAspirationAudioProcessor::prepareToPlay (double sampleRate, int samples
     // initialisation that you need..
     m_CGlottis = new Glottis(sampleRate, 2);
     m_CTract = new Tract(sampleRate, 2, samplesPerBlock);
-    
+    m_CPitchTrak = new PitchTrack();
+    m_CPitchTrak->init(samplesPerBlock, sampleRate);
 }
 
 void NosyAspirationAudioProcessor::releaseResources()
@@ -152,13 +153,15 @@ void NosyAspirationAudioProcessor::processBlock (AudioSampleBuffer& buffer, Midi
 
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
-    float* channelData = buffer.getWritePointer (0);
-    m_CGlottis->process(channelData, channelData, buffer.getNumSamples());
-    m_CTract->process(channelData, channelData, buffer.getNumSamples());
+    auto inputBuff = buffer.getReadPointer(0);
+    float* outputBuff = buffer.getWritePointer (0);
+    m_CGlottis->process(outputBuff, outputBuff, buffer.getNumSamples());
+    m_CTract->process(outputBuff, outputBuff, buffer.getNumSamples());
+    float f0 = m_CPitchTrak->getFundamentalFreq((float*)inputBuff);
     
     for (int channel = 1; channel < totalNumInputChannels; channel++) {
         float* other_channel_data = buffer.getWritePointer(channel);
-        memcpy(other_channel_data, channelData, sizeof(float) * buffer.getNumSamples());
+        memcpy(other_channel_data, outputBuff, sizeof(float) * buffer.getNumSamples());
     }
 
 }
