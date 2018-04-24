@@ -270,12 +270,20 @@ private:
             if (processor.isUsingDoublePrecision())
             {
                 tempBufferDouble.makeCopyOf (buffer, true);
-                processor.processBlock (tempBufferDouble, midiMessages);
+
+                if (node->isBypassed())
+                    processor.processBlockBypassed (tempBufferDouble, midiMessages);
+                else
+                    processor.processBlock (tempBufferDouble, midiMessages);
+
                 buffer.makeCopyOf (tempBufferDouble, true);
             }
             else
             {
-                processor.processBlock (buffer, midiMessages);
+                if (node->isBypassed())
+                    processor.processBlockBypassed (buffer, midiMessages);
+                else
+                    processor.processBlock (buffer, midiMessages);
             }
         }
 
@@ -283,12 +291,20 @@ private:
         {
             if (processor.isUsingDoublePrecision())
             {
-                processor.processBlock (buffer, midiMessages);
+                if (node->isBypassed())
+                    processor.processBlockBypassed (buffer, midiMessages);
+                else
+                    processor.processBlock (buffer, midiMessages);
             }
             else
             {
                 tempBufferFloat.makeCopyOf (buffer, true);
-                processor.processBlock (tempBufferFloat, midiMessages);
+
+                if (node->isBypassed())
+                    processor.processBlockBypassed (tempBufferFloat, midiMessages);
+                else
+                    processor.processBlock (tempBufferFloat, midiMessages);
+
                 buffer.makeCopyOf (tempBufferFloat, true);
             }
         }
@@ -827,6 +843,29 @@ bool AudioProcessorGraph::Node::Connection::operator== (const Connection& other)
 }
 
 //==============================================================================
+bool AudioProcessorGraph::Node::isBypassed() const noexcept
+{
+    if (processor != nullptr)
+    {
+        if (auto* bypassParam = processor->getBypassParameter())
+            return (bypassParam->getValue() != 0.0f);
+    }
+
+    return bypassed;
+}
+
+void AudioProcessorGraph::Node::setBypassed (bool shouldBeBypassed) noexcept
+{
+    if (processor != nullptr)
+    {
+        if (auto* bypassParam = processor->getBypassParameter())
+            bypassParam->setValueNotifyingHost (shouldBeBypassed ? 1.0f : 0.0f);
+    }
+
+    bypassed = shouldBeBypassed;
+}
+
+//==============================================================================
 struct AudioProcessorGraph::RenderSequenceFloat   : public GraphRenderSequence<float> {};
 struct AudioProcessorGraph::RenderSequenceDouble  : public GraphRenderSequence<double> {};
 
@@ -851,7 +890,7 @@ void AudioProcessorGraph::topologyChanged()
 {
     sendChangeMessage();
 
-    if (isPrepared)
+    if (isPrepared.get() != 0)
         triggerAsyncUpdate();
 }
 
@@ -1197,6 +1236,7 @@ void AudioProcessorGraph::buildRenderingSequence()
 void AudioProcessorGraph::handleAsyncUpdate()
 {
     buildRenderingSequence();
+    isPrepared = 1;
 }
 
 //==============================================================================
@@ -1209,9 +1249,7 @@ void AudioProcessorGraph::prepareToPlay (double /*sampleRate*/, int estimatedSam
         renderSequenceDouble->prepareBuffers (estimatedSamplesPerBlock);
 
     clearRenderingSequence();
-    buildRenderingSequence();
-
-    isPrepared = true;
+    triggerAsyncUpdate();
 }
 
 bool AudioProcessorGraph::supportsDoublePrecisionProcessing() const
@@ -1221,7 +1259,7 @@ bool AudioProcessorGraph::supportsDoublePrecisionProcessing() const
 
 void AudioProcessorGraph::releaseResources()
 {
-    isPrepared = false;
+    isPrepared = 0;
 
     for (auto* n : nodes)
         n->unprepare();
@@ -1257,20 +1295,53 @@ bool AudioProcessorGraph::producesMidi() const                      { return tru
 void AudioProcessorGraph::getStateInformation (juce::MemoryBlock&)  {}
 void AudioProcessorGraph::setStateInformation (const void*, int)    {}
 
+template <typename Type>
+static void processBlockForBuffer (AudioBuffer<Type>& buffer, MidiBuffer& midiMessages,
+                                   AudioProcessorGraph& graph,
+                                   GraphRenderSequence<Type>* renderSequence,
+                                   Atomic<int>& isPrepared)
+{
+    if (graph.isNonRealtime())
+    {
+        while (isPrepared.get() == 0)
+            Thread::sleep (1);
+
+        const ScopedLock sl (graph.getCallbackLock());
+
+        if (renderSequence != nullptr)
+            renderSequence->perform (buffer, midiMessages, graph.getPlayHead());
+    }
+    else
+    {
+        const ScopedLock sl (graph.getCallbackLock());
+
+        if (isPrepared.get() == 1)
+        {
+            if (renderSequence != nullptr)
+                renderSequence->perform (buffer, midiMessages, graph.getPlayHead());
+        }
+        else
+        {
+            buffer.clear();
+            midiMessages.clear();
+        }
+    }
+}
+
 void AudioProcessorGraph::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-    const ScopedLock sl (getCallbackLock());
+    if (isPrepared.get() == 0 && MessageManager::getInstance()->isThisTheMessageThread())
+        handleAsyncUpdate();
 
-    if (renderSequenceFloat != nullptr)
-        renderSequenceFloat->perform (buffer, midiMessages, getPlayHead());
+    processBlockForBuffer<float> (buffer, midiMessages, *this, renderSequenceFloat, isPrepared);
 }
 
 void AudioProcessorGraph::processBlock (AudioBuffer<double>& buffer, MidiBuffer& midiMessages)
 {
-    const ScopedLock sl (getCallbackLock());
+    if (isPrepared.get() == 0 && MessageManager::getInstance()->isThisTheMessageThread())
+        handleAsyncUpdate();
 
-    if (renderSequenceDouble != nullptr)
-        renderSequenceDouble->perform (buffer, midiMessages, getPlayHead());
+    processBlockForBuffer<double> (buffer, midiMessages, *this, renderSequenceDouble, isPrepared);
 }
 
 //==============================================================================

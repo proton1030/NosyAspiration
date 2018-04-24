@@ -38,14 +38,16 @@ struct AudioProcessorValueTreeState::Parameter   : public AudioProcessorParamete
                bool meta,
                bool automatable,
                bool discrete,
-               AudioProcessorParameter::Category category)
+               AudioProcessorParameter::Category category,
+               bool boolean)
         : AudioProcessorParameterWithID (parameterID, paramName, labelText, category),
           owner (s), valueToTextFunction (valueToText), textToValueFunction (textToValue),
           range (r), value (defaultVal), defaultValue (defaultVal),
           listenersNeedCalling (true),
           isMetaParam (meta),
           isAutomatableParam (automatable),
-          isDiscreteParam (discrete)
+          isDiscreteParam (discrete),
+          isBooleanParam (boolean)
     {
         state.addListener (this);
         needsUpdate.set (1);
@@ -152,6 +154,7 @@ struct AudioProcessorValueTreeState::Parameter   : public AudioProcessorParamete
     bool isMetaParameter() const override      { return isMetaParam; }
     bool isAutomatable() const override        { return isAutomatableParam; }
     bool isDiscrete() const override           { return isDiscreteParam; }
+    bool isBoolean() const override            { return isBooleanParam; }
 
     AudioProcessorValueTreeState& owner;
     ValueTree state;
@@ -162,7 +165,7 @@ struct AudioProcessorValueTreeState::Parameter   : public AudioProcessorParamete
     float value, defaultValue;
     Atomic<int> needsUpdate;
     bool listenersNeedCalling;
-    const bool isMetaParam, isAutomatableParam, isDiscreteParam;
+    const bool isMetaParam, isAutomatableParam, isDiscreteParam, isBooleanParam;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Parameter)
 };
@@ -184,7 +187,8 @@ AudioProcessorParameterWithID* AudioProcessorValueTreeState::createAndAddParamet
                                                                                     bool isMetaParameter,
                                                                                     bool isAutomatableParameter,
                                                                                     bool isDiscreteParameter,
-                                                                                    AudioProcessorParameter::Category category)
+                                                                                    AudioProcessorParameter::Category category,
+                                                                                    bool isBooleanParameter)
 {
     // All parameters must be created before giving this manager a ValueTree state!
     jassert (! state.isValid());
@@ -192,7 +196,7 @@ AudioProcessorParameterWithID* AudioProcessorValueTreeState::createAndAddParamet
     Parameter* p = new Parameter (*this, paramID, paramName, labelText, r,
                                   defaultVal, valueToTextFunction, textToValueFunction,
                                   isMetaParameter, isAutomatableParameter,
-                                  isDiscreteParameter, category);
+                                  isDiscreteParameter, category, isBooleanParameter);
     processor.addParameter (p);
     return p;
 }
@@ -421,12 +425,58 @@ struct AudioProcessorValueTreeState::SliderAttachment::Pimpl  : private Attached
     Pimpl (AudioProcessorValueTreeState& s, const String& p, Slider& sl)
         : AttachedControlBase (s, p), slider (sl), ignoreCallbacks (false)
     {
-        NormalisableRange<float> range (s.getParameterRange (paramID));
-        slider.setRange (range.start, range.end, range.interval);
-        slider.setSkewFactor (range.skew, range.symmetricSkew);
+        NormalisableRange<float> range (state.getParameterRange (paramID));
 
-        if (AudioProcessorParameter* param = state.getParameter (paramID))
+        if (range.interval != 0 || range.skew != 0)
+        {
+            slider.setRange (range.start, range.end, range.interval);
+            slider.setSkewFactor (range.skew, range.symmetricSkew);
+        }
+        else
+        {
+            auto convertFrom0To1Function = [range] (double currentRangeStart,
+                                                    double currentRangeEnd,
+                                                    double normalisedValue) mutable
+            {
+                range.start = (float) currentRangeStart;
+                range.end = (float) currentRangeEnd;
+                return (double) range.convertFrom0to1 ((float) normalisedValue);
+            };
+
+            auto convertTo0To1Function = [range] (double currentRangeStart,
+                                                  double currentRangeEnd,
+                                                  double mappedValue) mutable
+            {
+                range.start = (float) currentRangeStart;
+                range.end = (float) currentRangeEnd;
+                return (double) range.convertTo0to1 ((float) mappedValue);
+            };
+
+            auto snapToLegalValueFunction = [range] (double currentRangeStart,
+                                                     double currentRangeEnd,
+                                                     double valueToSnap) mutable
+            {
+                range.start = (float) currentRangeStart;
+                range.end = (float) currentRangeEnd;
+                return (double) range.snapToLegalValue ((float) valueToSnap);
+            };
+
+            slider.setNormalisableRange ({ (double) range.start, (double) range.end,
+                                           convertFrom0To1Function,
+                                           convertTo0To1Function,
+                                           snapToLegalValueFunction });
+        }
+
+        if (auto* param = dynamic_cast<AudioProcessorValueTreeState::Parameter*> (state.getParameter (paramID)))
+        {
+            if (param->textToValueFunction != nullptr)
+                slider.valueFromTextFunction = [param] (const String& text) { return (double) param->textToValueFunction (text); };
+
+            if (param->valueToTextFunction != nullptr)
+                slider.textFromValueFunction = [param] (double value)       { return param->valueToTextFunction ((float) value); };
+
             slider.setDoubleClickReturnValue (true, range.convertFrom0to1 (param->getDefaultValue()));
+        }
 
         sendInitialUpdate();
         slider.addListener (this);

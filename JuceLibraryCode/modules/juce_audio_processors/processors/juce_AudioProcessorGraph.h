@@ -40,6 +40,8 @@ namespace juce
 
     To play back a graph through an audio device, you might want to use an
     AudioProcessorPlayer object.
+
+    @tags{Audio}
 */
 class JUCE_API  AudioProcessorGraph   : public AudioProcessor,
                                         public ChangeBroadcaster,
@@ -107,6 +109,13 @@ public:
         NamedValueSet properties;
 
         //==============================================================================
+        /** Returns if the node is bypassed or not. */
+        bool isBypassed() const noexcept;
+
+        /** Tell this node to bypass processing. */
+        void setBypassed (bool shouldBeBypassed) noexcept;
+
+        //==============================================================================
         /** A convenient typedef for referring to a pointer to a node object. */
         typedef ReferenceCountedObjectPtr<Node> Ptr;
 
@@ -124,7 +133,7 @@ public:
 
         const ScopedPointer<AudioProcessor> processor;
         Array<Connection> inputs, outputs;
-        bool isPrepared = false;
+        bool isPrepared = false, bypassed = false;
 
         Node (NodeID, AudioProcessor*) noexcept;
 
@@ -376,7 +385,7 @@ private:
 
     friend class AudioGraphIOProcessor;
 
-    bool isPrepared = false;
+    Atomic<int> isPrepared { 0 };
 
     void topologyChanged();
     void handleAsyncUpdate() override;

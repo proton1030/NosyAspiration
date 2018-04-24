@@ -3,16 +3,19 @@
 <JUCERPROJECT id="hJlico" name="NosyAspiration" displaySplashScreen="1" reportAppUsage="1"
               splashScreenColour="Dark" projectType="audioplug" version="1.0.0"
               bundleIdentifier="com.yourcompany.NosyAspiration" includeBinaryInAppConfig="1"
-              cppLanguageStandard="11" companyCopyright="" buildVST="1" buildVST3="0"
+              cppLanguageStandard="14" companyCopyright="" buildVST="1" buildVST3="0"
               buildAU="1" buildAUv3="0" buildRTAS="0" buildAAX="0" buildStandalone="1"
               enableIAA="0" pluginName="NosyAspiration" pluginDesc="NosyAspiration"
               pluginManufacturer="yourcompany" pluginManufacturerCode="Manu"
               pluginCode="Hjli" pluginChannelConfigs="" pluginIsSynth="0" pluginWantsMidiIn="0"
               pluginProducesMidiOut="0" pluginIsMidiEffectPlugin="0" pluginEditorRequiresKeys="0"
-              pluginAUExportPrefix="NosyAspirationAU" pluginRTASCategory=""
-              aaxIdentifier="com.yourcompany.NosyAspiration" pluginAAXCategory="AAX_ePlugInCategory_Dynamics"
-              jucerVersion="5.2.1">
+              pluginAUExportPrefix="NosyAspirationAU" aaxIdentifier="com.yourcompany.NosyAspiration"
+              pluginAAXCategory="2" jucerVersion="5.3.1" pluginFormats="buildVST,buildAU,buildStandalone">
   <MAINGROUP id="isGQd8" name="NosyAspiration">
+    <GROUP id="{CCB0892E-8465-C696-4CD4-99F152C9EA95}" name="PitchTrack">
+      <FILE id="q0ybrL" name="PitchTrack.cpp" compile="1" resource="0" file="Source/PitchTrack.cpp"/>
+      <FILE id="P0VXM2" name="PitchTrack.h" compile="0" resource="0" file="Source/PitchTrack.h"/>
+    </GROUP>
     <GROUP id="{B77C10AB-27D4-CE46-1DE9-A9FC4BF166DD}" name="Tract">
       <FILE id="blX2rO" name="Tract.cpp" compile="1" resource="0" file="Source/Tract.cpp"/>
       <FILE id="WP3401" name="Tract.h" compile="0" resource="0" file="Source/Tract.h"/>
@@ -66,14 +69,13 @@
         <MODULEPATH id="juce_gui_basics" path="../modules"/>
         <MODULEPATH id="juce_gui_extra" path="../modules"/>
         <MODULEPATH id="juce_cryptography" path="../modules"/>
-        <MODULEPATH id="juce_video" path="../modules"/>
-        <MODULEPATH id="juce_opengl" path="../modules"/>
         <MODULEPATH id="juce_audio_basics" path="../modules"/>
         <MODULEPATH id="juce_audio_devices" path="../modules"/>
         <MODULEPATH id="juce_audio_formats" path="../modules"/>
         <MODULEPATH id="juce_audio_processors" path="../modules"/>
         <MODULEPATH id="juce_audio_plugin_client" path="../modules"/>
         <MODULEPATH id="juce_audio_utils" path="../modules"/>
+        <MODULEPATH id="juce_dsp" path="../../../../../../../Applications/JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
   </EXPORTFORMATS>
@@ -88,12 +90,11 @@
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_cryptography" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_dsp" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_video" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
   </MODULES>
   <JUCEOPTIONS JUCE_QUICKTIME="disabled"/>
 </JUCERPROJECT>

@@ -283,7 +283,10 @@ struct VST3HostContext  : public Vst::IComponentHandler,  // From VST V3.0.0
             if (index < 0)
                 return kResultFalse;
 
-            plugin->beginParameterChangeGesture (index);
+            if (auto* param = plugin->getParameters()[index])
+                param->beginChangeGesture();
+            else
+                jassertfalse; // Invalid parameter index!
         }
 
         return kResultTrue;
@@ -298,7 +301,10 @@ struct VST3HostContext  : public Vst::IComponentHandler,  // From VST V3.0.0
             if (index < 0)
                 return kResultFalse;
 
-            plugin->sendParamChangeMessageToListeners (index, (float) valueNormalized);
+            if (auto* param = plugin->getParameters()[index])
+                param->sendValueChangedMessageToListeners ((float) valueNormalized);
+            else
+                jassertfalse; // Invalid parameter index!
 
             {
                 Steinberg::int32 eventIndex;
@@ -322,7 +328,10 @@ struct VST3HostContext  : public Vst::IComponentHandler,  // From VST V3.0.0
             if (index < 0)
                 return kResultFalse;
 
-            plugin->endParameterChangeGesture (index);
+            if (auto* param = plugin->getParameters()[index])
+                param->endChangeGesture();
+            else
+                jassertfalse; // Invalid parameter index!
         }
 
         return kResultTrue;
@@ -1685,6 +1694,118 @@ struct VST3ComponentHolder
 //==============================================================================
 struct VST3PluginInstance : public AudioPluginInstance
 {
+    struct VST3Parameter final  : public Parameter
+    {
+        VST3Parameter (VST3PluginInstance& parent,
+                       Steinberg::Vst::ParamID parameterID,
+                       const String& parameterName,
+                       const String& parameterLabel,
+                       Steinberg::Vst::ParamValue defaultParameterValue,
+                       bool parameterIsAutomatable,
+                       bool parameterIsDiscrete,
+                       int numParameterSteps)
+            : pluginInstance (parent),
+              paramID (parameterID),
+              name (parameterName),
+              label (parameterLabel),
+              defaultValue (defaultParameterValue),
+              automatable (parameterIsAutomatable),
+              discrete (parameterIsDiscrete),
+              numSteps (numParameterSteps)
+        {
+        }
+
+        virtual float getValue() const override
+        {
+            if (pluginInstance.editController != nullptr)
+            {
+                return (float) pluginInstance.editController->getParamNormalized (paramID);
+            }
+
+            return 0.0f;
+        }
+
+        virtual void setValue (float newValue) override
+        {
+            if (pluginInstance.editController != nullptr)
+            {
+                pluginInstance.editController->setParamNormalized (paramID, (double) newValue);
+
+                Steinberg::int32 index;
+                pluginInstance.inputParameterChanges->addParameterData (paramID, index)
+                                                    ->addPoint (0, newValue, index);
+            }
+        }
+
+        String getText (float value, int maximumLength) const override
+        {
+            if (pluginInstance.editController != nullptr)
+            {
+                Vst::String128 result;
+
+                if (pluginInstance.editController->getParamStringByValue (paramID, value, result) == kResultOk)
+                    return toString (result).substring (0, maximumLength);
+            }
+
+            return Parameter::getText (value, maximumLength);
+        }
+
+        float getValueForText (const String& text) const override
+        {
+            if (pluginInstance.editController != nullptr)
+            {
+                Vst::ParamValue result;
+
+                if (pluginInstance.editController->getParamValueByString (paramID, toString (text), result) == kResultOk)
+                    return (float) result;
+            }
+
+            return Parameter::getValueForText (text);
+        }
+
+        float getDefaultValue() const override
+        {
+            return (float) defaultValue;
+        }
+
+        String getName (int /*maximumStringLength*/) const override
+        {
+            return name;
+        }
+
+        String getLabel() const override
+        {
+            return label;
+        }
+
+        bool isAutomatable() const override
+        {
+            return automatable;
+        }
+
+        bool isDiscrete() const override
+        {
+            return discrete;
+        }
+
+        int getNumSteps() const override
+        {
+            return numSteps;
+        }
+
+        StringArray getAllValueStrings() const override
+        {
+            return {};
+        }
+
+        VST3PluginInstance& pluginInstance;
+        const Steinberg::Vst::ParamID paramID;
+        const String name, label;
+        const Steinberg::Vst::ParamValue defaultValue;
+        const bool automatable, discrete;
+        const int numSteps;
+    };
+
     VST3PluginInstance (VST3ComponentHolder* componentHolder)
       : AudioPluginInstance (getBusProperties (componentHolder->component)),
         holder (componentHolder),
@@ -1752,9 +1873,34 @@ struct VST3PluginInstance : public AudioPluginInstance
         editController->setComponentHandler (holder->host);
         grabInformationObjects();
         interconnectComponentAndController();
+
+        for (int i = 0; i < editController->getParameterCount(); ++i)
+        {
+            Vst::ParameterInfo paramInfo = { 0 };
+            editController->getParameterInfo (i, paramInfo);
+
+            bool isDiscrete = paramInfo.stepCount != 0;
+            int numSteps = isDiscrete ? paramInfo.stepCount + 1
+                                      : AudioProcessor::getDefaultNumParameterSteps();
+
+            VST3Parameter* p = new VST3Parameter (*this,
+                                                  paramInfo.id,
+                                                  toString (paramInfo.title),
+                                                  toString (paramInfo.units),
+                                                  paramInfo.defaultNormalizedValue,
+                                                  (paramInfo.flags & Vst::ParameterInfo::kCanAutomate) != 0,
+                                                  isDiscrete,
+                                                  numSteps);
+            addParameter (p);
+
+            if ((paramInfo.flags & Vst::ParameterInfo::kIsBypass) != 0)
+                bypassParam = p;
+        }
+
         synchroniseStates();
         syncProgramNames();
         setupIO();
+
         return true;
     }
 
@@ -1873,12 +2019,13 @@ struct VST3PluginInstance : public AudioPluginInstance
         return (processor->canProcessSampleSize (Vst::kSample64) == kResultTrue);
     }
 
+    //==============================================================================
     void processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override
     {
         jassert (! isUsingDoublePrecision());
 
         if (isActive && processor != nullptr)
-            processAudio (buffer, midiMessages, Vst::kSample32);
+            processAudio (buffer, midiMessages, Vst::kSample32, false);
     }
 
     void processBlock (AudioBuffer<double>& buffer, MidiBuffer& midiMessages) override
@@ -1886,18 +2033,51 @@ struct VST3PluginInstance : public AudioPluginInstance
         jassert (isUsingDoublePrecision());
 
         if (isActive && processor != nullptr)
-            processAudio (buffer, midiMessages, Vst::kSample64);
+            processAudio (buffer, midiMessages, Vst::kSample64, false);
     }
 
+    void processBlockBypassed (AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override
+    {
+        jassert (! isUsingDoublePrecision());
+
+        if (bypassParam != nullptr)
+        {
+            if (isActive && processor != nullptr)
+                processAudio (buffer, midiMessages, Vst::kSample32, true);
+        }
+        else
+        {
+            AudioProcessor::processBlockBypassed (buffer, midiMessages);
+        }
+    }
+
+    void processBlockBypassed (AudioBuffer<double>& buffer, MidiBuffer& midiMessages) override
+    {
+        jassert (isUsingDoublePrecision());
+
+        if (bypassParam != nullptr)
+        {
+            if (isActive && processor != nullptr)
+                processAudio (buffer, midiMessages, Vst::kSample64, true);
+        }
+        else
+        {
+            AudioProcessor::processBlockBypassed (buffer, midiMessages);
+        }
+    }
+
+    //==============================================================================
     template <typename FloatType>
     void processAudio (AudioBuffer<FloatType>& buffer, MidiBuffer& midiMessages,
-                       Vst::SymbolicSampleSizes sampleSize)
+                       Vst::SymbolicSampleSizes sampleSize, bool isProcessBlockBypassedCall)
     {
         using namespace Vst;
         auto numSamples = buffer.getNumSamples();
 
         auto numInputAudioBuses  = getBusCount (true);
         auto numOutputAudioBuses = getBusCount (false);
+
+        updateBypass (isProcessBlockBypassedCall);
 
         ProcessData data;
         data.processMode            = isNonRealtime() ? kOffline : kRealtime;
@@ -2125,6 +2305,9 @@ struct VST3PluginInstance : public AudioPluginInstance
     bool producesMidi() const override   { return getNumSingleDirectionBusesFor (holder->component, false, false) > 0; }
 
     //==============================================================================
+    AudioProcessorParameter* getBypassParameter() const override         { return bypassParam; }
+
+    //==============================================================================
     /** May return a negative value as a means of informing us that the plugin has "infinite tail," or 0 for "no tail." */
     double getTailLengthSeconds() const override
     {
@@ -2156,93 +2339,6 @@ struct VST3PluginInstance : public AudioPluginInstance
 
         ComSmartPtr<IPlugView> view (tryCreatingView(), false);
         return view != nullptr;
-    }
-
-    //==============================================================================
-    int getNumParameters() override
-    {
-        if (editController != nullptr)
-            return (int) editController->getParameterCount();
-
-        return 0;
-    }
-
-    const String getParameterName (int parameterIndex) override
-    {
-        return toString (getParameterInfoForIndex (parameterIndex).title);
-    }
-
-    const String getParameterText (int parameterIndex) override
-    {
-        if (editController != nullptr)
-        {
-            auto id = getParameterInfoForIndex (parameterIndex).id;
-
-            Vst::String128 result;
-            warnOnFailure (editController->getParamStringByValue (id, editController->getParamNormalized (id), result));
-
-            return toString (result);
-        }
-
-        return {};
-    }
-
-    int getParameterNumSteps (int parameterIndex) override
-    {
-        if (editController != nullptr)
-        {
-            const auto numSteps = getParameterInfoForIndex (parameterIndex).stepCount;
-
-            if (numSteps > 0)
-                return numSteps;
-        }
-
-        return AudioProcessor::getDefaultNumParameterSteps();
-    }
-
-    bool isParameterDiscrete (int parameterIndex) const override
-    {
-        if (editController != nullptr)
-        {
-            const auto numSteps = getParameterInfoForIndex (parameterIndex).stepCount;
-            return numSteps > 0;
-        }
-
-        return false;
-    }
-
-    bool isParameterAutomatable (int parameterIndex) const override
-    {
-        if (editController != nullptr)
-        {
-            auto flags = getParameterInfoForIndex (parameterIndex).flags;
-            return (flags & Steinberg::Vst::ParameterInfo::kCanAutomate) != 0;
-        }
-
-        return true;
-    }
-
-    float getParameter (int parameterIndex) override
-    {
-        if (editController != nullptr)
-        {
-            auto id = getParameterInfoForIndex (parameterIndex).id;
-            return (float) editController->getParamNormalized (id);
-        }
-
-        return 0.0f;
-    }
-
-    void setParameter (int parameterIndex, float newValue) override
-    {
-        if (editController != nullptr)
-        {
-            auto paramID = getParameterInfoForIndex (parameterIndex).id;
-            editController->setParamNormalized (paramID, (double) newValue);
-
-            Steinberg::int32 index;
-            inputParameterChanges->addParameterData (paramID, index)->addPoint (0, newValue, index);
-        }
     }
 
     //==============================================================================
@@ -2533,7 +2629,8 @@ private:
     ComSmartPtr<ParamValueQueueList> inputParameterChanges, outputParameterChanges;
     ComSmartPtr<MidiEventList> midiInputs, midiOutputs;
     Vst::ProcessContext timingInfo; //< Only use this in processBlock()!
-    bool isControllerInitialised = false, isActive = false;
+    bool isControllerInitialised = false, isActive = false, lastProcessBlockCallWasBypass = false;
+    VST3Parameter* bypassParam = nullptr;
 
     //==============================================================================
     /** Some plugins need to be "connected" to intercommunicate between their implemented classes */
@@ -2648,6 +2745,28 @@ private:
         holder->component->getBusInfo (busInfo.mediaType, busInfo.direction,
                                        (Steinberg::int32) index, busInfo);
         return busInfo;
+    }
+
+    //==============================================================================
+    void updateBypass (bool processBlockBypassedCalled)
+    {
+        // to remain backward compatible, the logic needs to be the following:
+        // - if processBlockBypassed was called then definitely bypass the VST3
+        // - if processBlock was called then only un-bypass the VST3 if the previous
+        //   call was processBlockBypassed, otherwise do nothing
+        if (processBlockBypassedCalled)
+        {
+            if (bypassParam != nullptr && (bypassParam->getValue() == 0.0f || ! lastProcessBlockCallWasBypass))
+                bypassParam->setValue (1.0f);
+        }
+        else
+        {
+            if (lastProcessBlockCallWasBypass && bypassParam != nullptr)
+                bypassParam->setValue (0.0f);
+
+        }
+
+        lastProcessBlockCallWasBypass = processBlockBypassedCalled;
     }
 
     //==============================================================================
