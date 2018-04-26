@@ -12,6 +12,12 @@
               pluginAUExportPrefix="NosyAspirationAU" aaxIdentifier="com.yourcompany.NosyAspiration"
               pluginAAXCategory="2" jucerVersion="5.3.1" pluginFormats="buildVST,buildAU,buildStandalone">
   <MAINGROUP id="isGQd8" name="NosyAspiration">
+    <GROUP id="{4B7812F4-78FF-E9E3-01E4-5E769371612B}" name="OnsetDetection">
+      <FILE id="pu0LhW" name="OnsetDetection.cpp" compile="1" resource="0"
+            file="Source/OnsetDetection.cpp"/>
+      <FILE id="f7JQPd" name="OnsetDetection.h" compile="0" resource="0"
+            file="Source/OnsetDetection.h"/>
+    </GROUP>
     <GROUP id="{CCB0892E-8465-C696-4CD4-99F152C9EA95}" name="PitchTrack">
       <FILE id="q0ybrL" name="PitchTrack.cpp" compile="1" resource="0" file="Source/PitchTrack.cpp"/>
       <FILE id="P0VXM2" name="PitchTrack.h" compile="0" resource="0" file="Source/PitchTrack.h"/>

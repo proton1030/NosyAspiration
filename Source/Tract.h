@@ -84,9 +84,9 @@ private:
     struct trans {
         int     position;
         float   timeAlive,
-        lifeTime,
-        strength,
-        exponent;
+                lifeTime,
+                strength,
+                exponent;
     };
     std::vector<trans>  transients;
     
