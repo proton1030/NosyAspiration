@@ -10,7 +10,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-
+#include <iostream>
 
 //==============================================================================
 NosyAspirationAudioProcessor::NosyAspirationAudioProcessor()
@@ -106,12 +106,16 @@ void NosyAspirationAudioProcessor::prepareToPlay (double sampleRate, int samples
     m_CPitchTrak->init(samplesPerBlock, sampleRate);
     m_COnsetDetection = new OnsetDetection();
     m_COnsetDetection->init(samplesPerBlock, sampleRate);
+
 }
 
 void NosyAspirationAudioProcessor::releaseResources()
 {
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
+    m_CPitchTrak->~PitchTrack();
+//    m_CGlottis->~Glottis();
+    m_CTract->~Tract();
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -147,19 +151,20 @@ void NosyAspirationAudioProcessor::processBlock (AudioSampleBuffer& buffer, Midi
     for (int i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    
-    
     auto inputBuff = buffer.getReadPointer(0);
+    float rms = buffer.getRMSLevel(0, 0, blockSize);
+    float f0 = m_CPitchTrak->getFundamentalFreq((float*)inputBuff);
+    std::cout << rms << std::endl;
+    m_CGlottis->setParam(Glottis::k_frequency, f0);
     float* outputBuff = buffer.getWritePointer (0);
     m_CGlottis->process(outputBuff, outputBuff, buffer.getNumSamples());
     m_CTract->process(outputBuff, outputBuff, buffer.getNumSamples());
-    float f0 = m_CPitchTrak->getFundamentalFreq((float*)inputBuff);
-    
     for (int channel = 1; channel < totalNumInputChannels; channel++) {
         float* other_channel_data = buffer.getWritePointer(channel);
         memcpy(other_channel_data, outputBuff, sizeof(float) * buffer.getNumSamples());
     }
-
+    buffer.applyGain(0, 0, blockSize, rms * 6);
+    buffer.applyGain(1, 0, blockSize, rms * 6);
 }
 
 //==============================================================================

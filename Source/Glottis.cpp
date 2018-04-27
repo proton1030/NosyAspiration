@@ -26,7 +26,6 @@ num_channels(num_channels)
 }
 
 Glottis::~Glottis(){
-    delete waveform_gen;
 }
 
 void Glottis::setParam(Glottis::GlottisParams paramType, float paramVal) {
@@ -47,7 +46,6 @@ float Glottis::runStep(float lambda, float noise_source) {
     float aspiration = params[k_intensity] * (1-sqrt(params[k_tenseness])) * getNoiseModulator() * noise_source;
     aspiration *= 0.2 + 0.02* SimplexNoise::simpleNoise1dWarper(waveform_gen->getTotalTime() * 1.99);
     wave_form_out += aspiration;
-//    std::cout << wave_form_out << std::endl;
     return wave_form_out;
 }
 
@@ -65,7 +63,6 @@ void Glottis::process(float *input_buffer, float *output_buffer, int num_samples
     for (int i = 0; i < num_samples; i++) {
         float lambda = (float)i / num_samples;
         output_buffer[i] = runStep(lambda, 0);
-//        std::cout << output_buffer[i] << std::endl;
     }
     finishBlock();
 }
