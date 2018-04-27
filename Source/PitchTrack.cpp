@@ -38,7 +38,9 @@ void PitchTrack::computeAcf(float *inputBuff) {
     memcpy(m_fftBuff, inputBuff, sizeof(float) * m_blockLength);
     m_fft->performRealOnlyForwardTransform(m_fftBuff);
     for (int i = 0; i < m_fftSize * 2; i+=2) {
+        // calculate conjugate element wise mulitply
         m_fftBuff[i] = m_fftBuff[i] * m_fftBuff[i] + m_fftBuff[i+1] * m_fftBuff[i+1];
+        // seting imagine part to zero
         m_fftBuff[i+1] = 0;
     }
     m_fft->performRealOnlyInverseTransform(m_fftBuff);
@@ -55,15 +57,13 @@ float PitchTrack::getFundamentalFreq(float *inputBuff) {
             break;
         }
     }
-    float t_init = 0;
+    float lag = 0;
     float max_peak = 0;
     for (int i= start; i < m_blockLength; i++) {
         if (m_acfBuff[i] > max_peak) {
             max_peak = m_acfBuff[i];
-            t_init = i;
+            lag = i;
         }
     }
-    float f0 = m_sampleRate / (t_init - 1); // for beakpoint now
-    
-    return f0;
+    return m_sampleRate / (lag - 1.0f);
 }

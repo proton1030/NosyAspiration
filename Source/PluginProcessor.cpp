@@ -111,6 +111,8 @@ void NosyAspirationAudioProcessor::releaseResources()
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
     m_CPitchTrak->~PitchTrack();
+    m_CGlottis->~Glottis();
+    m_CTract->~Tract();
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations

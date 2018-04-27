@@ -21,7 +21,7 @@ public:
 private:
     FFT* m_fft;
     int m_blockLength;
-    int m_sampleRate;
+    float m_sampleRate; // declare samplerate as float to reduce implicit cast for calculating freq
     int m_fftSize;
     float* m_fftBuff;
     float* m_acfBuff;
