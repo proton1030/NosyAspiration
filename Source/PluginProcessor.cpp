@@ -10,7 +10,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-
+#include <iostream>
 
 //==============================================================================
 NosyAspirationAudioProcessor::NosyAspirationAudioProcessor()
@@ -110,6 +110,7 @@ void NosyAspirationAudioProcessor::releaseResources()
 {
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
+    m_CPitchTrak->~PitchTrack();
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -154,11 +155,12 @@ void NosyAspirationAudioProcessor::processBlock (AudioSampleBuffer& buffer, Midi
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
     auto inputBuff = buffer.getReadPointer(0);
+    float f0 = m_CPitchTrak->getFundamentalFreq((float*)inputBuff);
     float* outputBuff = buffer.getWritePointer (0);
     m_CGlottis->process(outputBuff, outputBuff, buffer.getNumSamples());
     m_CTract->process(outputBuff, outputBuff, buffer.getNumSamples());
-    float f0 = m_CPitchTrak->getFundamentalFreq((float*)inputBuff);
     
+    std::cout << f0 << std::endl;
     for (int channel = 1; channel < totalNumInputChannels; channel++) {
         float* other_channel_data = buffer.getWritePointer(channel);
         memcpy(other_channel_data, outputBuff, sizeof(float) * buffer.getNumSamples());
