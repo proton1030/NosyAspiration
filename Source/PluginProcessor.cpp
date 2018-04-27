@@ -104,6 +104,7 @@ void NosyAspirationAudioProcessor::prepareToPlay (double sampleRate, int samples
     m_CTract = new Tract(sampleRate, 2, samplesPerBlock);
     m_CPitchTrak = new PitchTrack();
     m_CPitchTrak->init(samplesPerBlock, sampleRate);
+    blockSize = samplesPerBlock;
 }
 
 void NosyAspirationAudioProcessor::releaseResources()
@@ -144,7 +145,6 @@ void NosyAspirationAudioProcessor::processBlock (AudioSampleBuffer& buffer, Midi
     ScopedNoDenormals noDenormals;
     const int totalNumInputChannels  = getTotalNumInputChannels();
     const int totalNumOutputChannels = getTotalNumOutputChannels();
-
     // In case we have more outputs than inputs, this code clears any output
     // channels that didn't contain input data, (because these aren't
     // guaranteed to be empty - they may contain garbage).
@@ -152,22 +152,23 @@ void NosyAspirationAudioProcessor::processBlock (AudioSampleBuffer& buffer, Midi
     // when they first compile a plugin, but obviously you don't need to keep
     // this code if your algorithm always overwrites all the output channels.
     for (int i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
-
+        buffer.clear(i, 0, buffer.getNumSamples());
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
     auto inputBuff = buffer.getReadPointer(0);
+    float rms = buffer.getRMSLevel(0, 0, blockSize);
     float f0 = m_CPitchTrak->getFundamentalFreq((float*)inputBuff);
+    std::cout << rms << std::endl;
+    m_CGlottis->setParam(Glottis::k_frequency, f0);
     float* outputBuff = buffer.getWritePointer (0);
     m_CGlottis->process(outputBuff, outputBuff, buffer.getNumSamples());
     m_CTract->process(outputBuff, outputBuff, buffer.getNumSamples());
-    
-    std::cout << f0 << std::endl;
     for (int channel = 1; channel < totalNumInputChannels; channel++) {
         float* other_channel_data = buffer.getWritePointer(channel);
         memcpy(other_channel_data, outputBuff, sizeof(float) * buffer.getNumSamples());
     }
-
+    buffer.applyGain(0, 0, blockSize, rms * 6);
+    buffer.applyGain(1, 0, blockSize, rms * 6);
 }
 
 //==============================================================================

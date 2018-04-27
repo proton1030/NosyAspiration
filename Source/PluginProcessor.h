@@ -61,6 +61,7 @@ public:
     Glottis*    m_CGlottis = 0;
     Tract*      m_CTract = 0;
     PitchTrack* m_CPitchTrak = 0;
+    int         blockSize = 0;
 private:
 
     //==============================================================================
