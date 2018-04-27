@@ -14,6 +14,7 @@
 #include "Glottis.h"
 #include "Tract.h"
 #include "PitchTrack.h"
+#include "OnsetDetection.h"
 
 //==============================================================================
 /**
@@ -58,9 +59,10 @@ public:
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
     
-    Glottis*    m_CGlottis = 0;
-    Tract*      m_CTract = 0;
-    PitchTrack* m_CPitchTrak = 0;
+    Glottis*            m_CGlottis = 0;
+    Tract*              m_CTract = 0;
+    PitchTrack*         m_CPitchTrak = 0;
+    OnsetDetection*     m_COnsetDetection = 0;
 private:
 
     //==============================================================================

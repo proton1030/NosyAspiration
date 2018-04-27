@@ -104,6 +104,8 @@ void NosyAspirationAudioProcessor::prepareToPlay (double sampleRate, int samples
     m_CTract = new Tract(sampleRate, 2, samplesPerBlock);
     m_CPitchTrak = new PitchTrack();
     m_CPitchTrak->init(samplesPerBlock, sampleRate);
+    m_COnsetDetection = new OnsetDetection();
+    m_COnsetDetection->init(samplesPerBlock, sampleRate);
 }
 
 void NosyAspirationAudioProcessor::releaseResources()
@@ -142,17 +144,11 @@ void NosyAspirationAudioProcessor::processBlock (AudioSampleBuffer& buffer, Midi
     const int totalNumInputChannels  = getTotalNumInputChannels();
     const int totalNumOutputChannels = getTotalNumOutputChannels();
 
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
     for (int i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
+    
+    
     auto inputBuff = buffer.getReadPointer(0);
     float* outputBuff = buffer.getWritePointer (0);
     m_CGlottis->process(outputBuff, outputBuff, buffer.getNumSamples());

@@ -38,6 +38,18 @@ NosyAspirationAudioProcessorEditor::NosyAspirationAudioProcessorEditor (NosyAspi
     sliderTongueDiam->setTextBoxStyle (Slider::TextBoxRight, false, 60, 20);
     sliderTongueDiam->addListener (this);
     
+    addAndMakeVisible (sliderTongueTipPos = new Slider ("Tongue Tip Position"));
+    sliderTongueTipPos->setRange (10, 42, 0.01);
+    sliderTongueTipPos->setSliderStyle (Slider::LinearHorizontal);
+    sliderTongueTipPos->setTextBoxStyle (Slider::TextBoxRight, false, 60, 20);
+    sliderTongueTipPos->addListener (this);
+    
+    addAndMakeVisible (sliderTongueTipDiam = new Slider ("Tongue Position"));
+    sliderTongueTipDiam->setRange (-1.05, 3.05, 0.01);
+    sliderTongueTipDiam->setSliderStyle (Slider::LinearHorizontal);
+    sliderTongueTipDiam->setTextBoxStyle (Slider::TextBoxRight, false, 60, 20);
+    sliderTongueTipDiam->addListener (this);
+    
     addAndMakeVisible (lSliderFreq = new Label ("new label", TRANS("Frequency")));
     lSliderFreq->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     lSliderFreq->setJustificationType (Justification::centredLeft);
@@ -59,9 +71,25 @@ NosyAspirationAudioProcessorEditor::NosyAspirationAudioProcessorEditor (NosyAspi
     lSliderTongueDiam->setColour (TextEditor::textColourId, Colours::black);
     lSliderTongueDiam->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     
+    addAndMakeVisible (lSliderTongueTipPos = new Label ("new label", TRANS("Tongue Base Loc")));
+    lSliderTongueTipPos->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
+    lSliderTongueTipPos->setJustificationType (Justification::centredLeft);
+    lSliderTongueTipPos->setEditable (false, false, false);
+    lSliderTongueTipPos->setColour (TextEditor::textColourId, Colours::black);
+    lSliderTongueTipPos->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    
+    addAndMakeVisible (lSliderTongueTipDiam = new Label ("new label", TRANS("Tongue Base Height")));
+    lSliderTongueTipDiam->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
+    lSliderTongueTipDiam->setJustificationType (Justification::centredLeft);
+    lSliderTongueTipDiam->setEditable (false, false, false);
+    lSliderTongueTipDiam->setColour (TextEditor::textColourId, Colours::black);
+    lSliderTongueTipDiam->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    
     sliderFreq->setValue(processor.m_CGlottis->getParam(Glottis::k_frequency));
     sliderTonguePos->setValue(processor.m_CTract->getParam(Tract::k_tongueBaseIndex));
     sliderTongueDiam->setValue(processor.m_CTract->getParam(Tract::k_tongueBaseDiameter));
+    sliderTongueTipPos->setValue(processor.m_CTract->getParam(Tract::k_tongueTipIndex));
+    sliderTongueTipDiam->setValue(processor.m_CTract->getParam(Tract::k_tongueTipDiameter));
     
     setSize (500, 300);
 }
@@ -71,9 +99,13 @@ NosyAspirationAudioProcessorEditor::~NosyAspirationAudioProcessorEditor()
     sliderFreq = nullptr;
     sliderTonguePos = nullptr;
     sliderTongueDiam = nullptr;
+    sliderTongueTipPos = nullptr;
+    sliderTongueTipDiam = nullptr;
     lSliderFreq = nullptr;
     lSliderTonguePos = nullptr;
     lSliderTongueDiam = nullptr;
+    lSliderTongueTipPos = nullptr;
+    lSliderTongueTipDiam = nullptr;
 }
 
 //==============================================================================
@@ -95,9 +127,13 @@ void NosyAspirationAudioProcessorEditor::resized()
     lSliderFreq->setBounds (proportionOfWidth (0.020f), proportionOfHeight (0.1000f), proportionOfWidth (0.20f), proportionOfHeight (0.1000f));
     lSliderTonguePos->setBounds (proportionOfWidth (0.020f), proportionOfHeight (0.2500f), proportionOfWidth (0.20f), proportionOfHeight (0.1000f));
     lSliderTongueDiam->setBounds (proportionOfWidth (0.020f), proportionOfHeight (0.400f), proportionOfWidth (0.20f), proportionOfHeight (0.1000f));
+    lSliderTongueTipPos->setBounds (proportionOfWidth (0.020f), proportionOfHeight (0.5500f), proportionOfWidth (0.20f), proportionOfHeight (0.1000f));
+    lSliderTongueTipDiam->setBounds (proportionOfWidth (0.020f), proportionOfHeight (0.700f), proportionOfWidth (0.20f), proportionOfHeight (0.1000f));
     sliderFreq->setBounds (proportionOfWidth (0.23f), proportionOfHeight (0.1000f), proportionOfWidth (0.720f), proportionOfHeight (0.1000f));
     sliderTonguePos->setBounds (proportionOfWidth (0.23f), proportionOfHeight (0.2500f), proportionOfWidth (0.720f), proportionOfHeight (0.1000f));
     sliderTongueDiam->setBounds (proportionOfWidth (0.23f), proportionOfHeight (0.4000f), proportionOfWidth (0.720f), proportionOfHeight (0.1000f));
+    sliderTongueTipPos->setBounds (proportionOfWidth (0.23f), proportionOfHeight (0.5500f), proportionOfWidth (0.720f), proportionOfHeight (0.1000f));
+    sliderTongueTipDiam->setBounds (proportionOfWidth (0.23f), proportionOfHeight (0.7000f), proportionOfWidth (0.720f), proportionOfHeight (0.1000f));
 }
 
 void NosyAspirationAudioProcessorEditor::sliderValueChanged (Slider* sliderThatWasMoved)
@@ -113,5 +149,13 @@ void NosyAspirationAudioProcessorEditor::sliderValueChanged (Slider* sliderThatW
     else if (sliderThatWasMoved == sliderTongueDiam)
     {
         processor.m_CTract->setParam(Tract::k_tongueBaseDiameter, sliderThatWasMoved->getValue());
+    }
+    else if (sliderThatWasMoved == sliderTongueTipPos)
+    {
+        processor.m_CTract->setParam(Tract::k_tongueTipIndex, sliderThatWasMoved->getValue());
+    }
+    else if (sliderThatWasMoved == sliderTongueTipDiam)
+    {
+        processor.m_CTract->setParam(Tract::k_tongueTipDiameter, sliderThatWasMoved->getValue());
     }
 }

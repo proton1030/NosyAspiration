@@ -11,14 +11,19 @@
 #include "Tract.h"
 #include <algorithm>
 #include <iostream>
+#include <math.h>
+
+#define PI 3.14159F
 
 Tract::Tract(int sampleRate, int numChannels, int blockLength):
 m_iSampleRate(sampleRate),
 m_iNumChannels(numChannels),
 m_iBlockLength(blockLength)
 {
-    params[k_tongueBaseIndex] = 12.9;
-    params[k_tongueBaseDiameter] = 2.9;
+    params[k_tongueBaseIndex] = 12.9F;
+    params[k_tongueBaseDiameter] = 2.9F;
+    params[k_tongueTipIndex] = 42.F;
+    params[k_tongueTipDiameter] = 2.F;
     
     for (int i=0; i<n; i++)
     {
@@ -98,10 +103,41 @@ void Tract::setRestDiameter()
             curve *= 0.94;
         restDiameter[i] = 1.5 - curve;
     }
+    for (int i=0; i<n; i++)
+        targetDiameter[i] = restDiameter[i];
+    
 }
 
 void Tract::reshapeTract()
 {
+    velumTarget = 0.01;
+    if (params[k_tongueTipDiameter]<0) params[k_tongueTipDiameter] = 0;
+    int width = 2;
+    if (params[k_tongueTipIndex]<25) width = 10;
+    else if (params[k_tongueTipIndex]>=tipStart) width= 5;
+    else width = 10 - 5 * (params[k_tongueTipIndex] - 25) / (tipStart - 25);
+    if (params[k_tongueTipIndex] >= 2 && params[k_tongueTipIndex] < n && params[k_tongueTipDiameter] < 3)
+    {
+        int intIndex = round(params[k_tongueTipIndex]);
+        
+        for (int i= -ceil(width) - 1; i < width+1 ; i++)
+        {
+            // if (intIndex+i<0 || intIndex+i>=n) continue;
+            float relpos = (intIndex + i) - params[k_tongueTipIndex];
+            relpos = abs(relpos) - 0.5;
+            float shrink;
+            if (relpos <= 0) shrink = 0;
+            else if (relpos > width) shrink = 1;
+            else shrink = 0.5 * (1 - cos(PI * relpos / width));
+            if (params[k_tongueTipDiameter] < targetDiameter[intIndex+i])
+            {
+                targetDiameter[intIndex+i] = params[k_tongueTipDiameter] + (targetDiameter[intIndex+i]-params[k_tongueTipDiameter])*shrink;
+            }
+            // std::cout << intIndex+i << " | " << targetDiameter[intIndex+i] << std::endl;
+        }
+        
+    }
+    
     float amount = deltaTime * movementSpeed;
     int newLastObstruction = -1;
     for (int i = 0; i < n; i++)
@@ -124,6 +160,7 @@ void Tract::reshapeTract()
     lastObstruction = newLastObstruction;
     noseDiameter[0] = moveTowards(noseDiameter[0], velumTarget, amount*0.25, amount*0.1);
     noseA[0] = noseDiameter[0] * noseDiameter[0];
+    
     
 }
 

@@ -19,6 +19,8 @@ public:
     enum TractParams {
         k_tongueBaseIndex,
         k_tongueBaseDiameter,
+        k_tongueTipIndex,
+        k_tongueTipDiameter,
         
         k_num_tract_params
     };

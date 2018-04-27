@@ -34,7 +34,7 @@ private:
     // access the processor object that created it.
     NosyAspirationAudioProcessor& processor;
     
-    ScopedPointer<Slider> sliderFreq, sliderTonguePos, sliderTongueDiam;
-    ScopedPointer<Label> lSliderFreq, lSliderTonguePos, lSliderTongueDiam;
+    ScopedPointer<Slider> sliderFreq, sliderTonguePos, sliderTongueDiam, sliderTongueTipPos, sliderTongueTipDiam;
+    ScopedPointer<Label> lSliderFreq, lSliderTonguePos, lSliderTongueDiam, lSliderTongueTipPos, lSliderTongueTipDiam;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NosyAspirationAudioProcessorEditor)
 };
