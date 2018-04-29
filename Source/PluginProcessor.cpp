@@ -161,7 +161,6 @@ void NosyAspirationAudioProcessor::processBlock (AudioSampleBuffer& buffer, Midi
     float* tractParams = 0;
     if (m_COnsetDetection->bOnsetDetection == 1) {
         tractParams = m_CSequencer->incPronunceAndGetVowel();
-        
     } else {
         tractParams = m_CSequencer->incVowelAndGetVowel();
     }

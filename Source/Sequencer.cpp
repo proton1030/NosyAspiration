@@ -12,6 +12,7 @@
 Sequencer::Sequencer(float sampleRate, float blockLength):
 curPronounciation(0),
 curPronunceationIdx(0),
+curVowelIdx(0),
 sampleRate(sampleRate),
 blockLength(blockLength)
 {
@@ -62,8 +63,8 @@ void Sequencer::init() {
     li.duration[0] = 100.0f;
     li.duration[1] = -1;
     
-    availableElements.push_back("la");
-    availableElements.push_back("li");
+    availablePronunciations.push_back("la");
+    availablePronunciations.push_back("li");
     pronunciationLookUp["la"] = la;
     pronunciationLookUp["li"] = li;
 }
@@ -72,6 +73,7 @@ float* Sequencer::incPronunceAndGetVowel() {
     if (curSequence.size() > 0){
         curPronounciation = &curSequence[curPronunceationIdx];
         curPronunceationIdx = (curPronunceationIdx + 1) % curSequence.size();
+        curVowelIdx = 0;
         return curPronounciation->params[0];
     } else {
         return 0;
@@ -97,7 +99,13 @@ void Sequencer::Add(string pronouciation) {
     curPronunceationIdx = 0;
 }
 
-vector<string> Sequencer::getAvailableElements(){
-    return availableElements;
+// pos is zero based
+void Sequencer::deleteNote(int pos) {
+    curSequence.erase(curSequence.begin() + pos);
+    curPronunceationIdx = 0;
+}
+
+vector<string> Sequencer::getAvailablePronunciations(){
+    return availablePronunciations;
 }
 

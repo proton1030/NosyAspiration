@@ -23,7 +23,7 @@ public:
     void insert(string element, int pos);
     void Add(string element);
     void deleteNote(int pos);
-    vector<string> getAvailableElements();
+    vector<string> getAvailablePronunciations();
     float* incPronunceAndGetVowel();
     float* incVowelAndGetVowel();
 private:
@@ -35,7 +35,7 @@ private:
     };
     unordered_map<string, pronunciation> pronunciationLookUp;
     vector<pronunciation> curSequence;
-    vector<string> availableElements;
+    vector<string> availablePronunciations;
     pronunciation* curPronounciation;
     int curPronunceationIdx;
     int curVowelIdx;
