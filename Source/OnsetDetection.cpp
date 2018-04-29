@@ -95,7 +95,6 @@ void OnsetDetection::calculatePpmAndZCR(const float* inputBuff)
         {
             m_fVPpmTemp = m_fAlpha[0] * abs(inputBuff[iSample]) + (1 - m_fAlpha[0]) * m_fVPpmTemp;
         }
-
         if (fMaxValue < m_fVPpmTemp)
         {
             fMaxValue = m_fVPpmTemp;

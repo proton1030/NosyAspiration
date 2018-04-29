@@ -12,6 +12,10 @@
               pluginAUExportPrefix="NosyAspirationAU" aaxIdentifier="com.yourcompany.NosyAspiration"
               pluginAAXCategory="2" jucerVersion="5.3.1" pluginFormats="buildVST,buildAU,buildStandalone">
   <MAINGROUP id="isGQd8" name="NosyAspiration">
+    <GROUP id="{B44BD222-739E-B165-5214-333166B14361}" name="Sequencer">
+      <FILE id="caNOxD" name="Sequencer.cpp" compile="1" resource="0" file="Source/Sequencer.cpp"/>
+      <FILE id="aRuok4" name="Sequencer.h" compile="0" resource="0" file="Source/Sequencer.h"/>
+    </GROUP>
     <GROUP id="{4B7812F4-78FF-E9E3-01E4-5E769371612B}" name="OnsetDetection">
       <FILE id="pu0LhW" name="OnsetDetection.cpp" compile="1" resource="0"
             file="Source/OnsetDetection.cpp"/>
