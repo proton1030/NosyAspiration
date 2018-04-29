@@ -149,6 +149,7 @@ void NosyAspirationAudioProcessor::processBlock (AudioSampleBuffer& buffer, Midi
     const int totalNumInputChannels  = getTotalNumInputChannels();
     const int totalNumOutputChannels = getTotalNumOutputChannels();
 
+    
     for (int i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
@@ -158,8 +159,9 @@ void NosyAspirationAudioProcessor::processBlock (AudioSampleBuffer& buffer, Midi
     m_CGlottis->setParam(Glottis::k_frequency, f0);
     
     m_COnsetDetection->updateOnsetDetection(buffer);
+    
     float* tractParams = 0;
-    if (m_COnsetDetection->bOnsetDetection == 1) {
+    if (m_COnsetDetection->bOnsetDetection) {
         tractParams = m_CSequencer->incPronunceAndGetVowel();
     } else {
         tractParams = m_CSequencer->incVowelAndGetVowel();
