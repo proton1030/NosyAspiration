@@ -157,6 +157,7 @@ void NosyAspirationAudioProcessor::processBlock (AudioSampleBuffer& buffer, Midi
     auto inputBuff = buffer.getReadPointer(0);
     
     float f0 = m_CPitchTrak->getFundamentalFreq((float*)inputBuff);
+    std::cout << f0 << std::endl;
     
     m_CGlottis->setParam(Glottis::k_frequency, f0);
     
@@ -186,12 +187,11 @@ void NosyAspirationAudioProcessor::processBlock (AudioSampleBuffer& buffer, Midi
     for (int i = 0; i < totalNumInputChannels; i++) {
         if (rms > 2e-2) {
             buffer.applyGain(i, 0, buffer.getNumSamples(), m_gain);
-            smooth_gain = m_gain;
+            m_smoothGain = m_gain;
         } else {
-            smooth_gain /= 1.25;
-            buffer.applyGain(i, 0, buffer.getNumSamples(), smooth_gain);
+            m_smoothGain /= 1.25f;
+            buffer.applyGain(i, 0, buffer.getNumSamples(), m_smoothGain);
         }
-        
     }
 }
 
