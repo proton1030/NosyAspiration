@@ -149,12 +149,12 @@ void NosyAspirationAudioProcessor::processBlock (AudioSampleBuffer& buffer, Midi
     const int totalNumInputChannels  = getTotalNumInputChannels();
     const int totalNumOutputChannels = getTotalNumOutputChannels();
 
-    
+    float rms = buffer.getRMSLevel(0, 0, buffer.getNumSamples());
+
     for (int i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
     auto inputBuff = buffer.getReadPointer(0);
-    float rms = buffer.getRMSLevel(0, 0, blockSize);
     
     float f0 = m_CPitchTrak->getFundamentalFreq((float*)inputBuff);
     
@@ -184,7 +184,14 @@ void NosyAspirationAudioProcessor::processBlock (AudioSampleBuffer& buffer, Midi
     }
     
     for (int i = 0; i < totalNumInputChannels; i++) {
-        buffer.applyGain(i, 0, blockSize, rms * 6);
+        if (rms > 2e-2) {
+            buffer.applyGain(i, 0, buffer.getNumSamples(), m_gain);
+            smooth_gain = m_gain;
+        } else {
+            smooth_gain /= 1.25;
+            buffer.applyGain(i, 0, buffer.getNumSamples(), smooth_gain);
+        }
+        
     }
 }
 

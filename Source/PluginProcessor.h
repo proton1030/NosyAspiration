@@ -65,7 +65,8 @@ public:
     PitchTrack*         m_CPitchTrak = 0;
     OnsetDetection*     m_COnsetDetection = 0;
     Sequencer*          m_CSequencer = 0;
-    int                 blockSize = 0;
+    float               m_gain = 1;
+    float               smooth_gain = 0;
 
 private:
 
