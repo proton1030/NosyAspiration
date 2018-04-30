@@ -155,7 +155,9 @@ void NosyAspirationAudioProcessor::processBlock (AudioSampleBuffer& buffer, Midi
 
     auto inputBuff = buffer.getReadPointer(0);
     float rms = buffer.getRMSLevel(0, 0, blockSize);
+    
     float f0 = m_CPitchTrak->getFundamentalFreq((float*)inputBuff);
+    
     m_CGlottis->setParam(Glottis::k_frequency, f0);
     
     m_COnsetDetection->updateOnsetDetection(buffer);

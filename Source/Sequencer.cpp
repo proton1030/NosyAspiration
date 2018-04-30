@@ -26,8 +26,11 @@ Sequencer::~Sequencer()
             delete [] it->params[i];
         }
         delete [] it->params;
+        delete [] it->duration;
     }
 }
+
+//adding in prounciation params
 void Sequencer::init() {
     timeStep = blockLength/sampleRate * 1000;
     

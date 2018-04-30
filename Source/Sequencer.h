@@ -43,4 +43,5 @@ private:
     float timeStep;
     float sampleRate;
     float blockLength;
+    void addPronunciation(string name, float durationInMs, int numOfVowels);
 };
