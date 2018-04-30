@@ -157,7 +157,6 @@ void NosyAspirationAudioProcessor::processBlock (AudioSampleBuffer& buffer, Midi
     auto inputBuff = buffer.getReadPointer(0);
     
     float f0 = m_CPitchTrak->getFundamentalFreq((float*)inputBuff);
-    std::cout << f0 << std::endl;
     
     m_CGlottis->setParam(Glottis::k_frequency, f0);
     

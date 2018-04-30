@@ -43,5 +43,5 @@ private:
     float timeStep;
     float sampleRate;
     float blockLength;
-    void addPronunciation(string name, float durationInMs, int numOfVowels);
+    void addPronunciation(string name, int numOfVowels, float* durationInMs,  float params[][Tract::k_num_tract_params]);
 };

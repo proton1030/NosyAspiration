@@ -34,56 +34,43 @@ Sequencer::~Sequencer()
 void Sequencer::init() {
     timeStep = blockLength/sampleRate * 1000;
     
-    pronunciation la;
-    la.name = "la";
-    la.numOfVowels = 2;
-    la.params = new float*[la.numOfVowels];
-    for (int i = 0; i < la.numOfVowels; i++) {
-        la.params[i] = new float[Tract::k_num_tract_params];
-    }
+    float la_params[2][Tract::k_num_tract_params] =
+    {
+        {13.58, 2.9, 40.45, 0.88},
+        {13.58, 2.9, 40.45, 2.33}
+    };
+    float la_duration[2] = {800.0f, -1};
+    addPronunciation("la", 2, la_duration, la_params);
     
-    la.params[0][Tract::k_tongueBaseIndex] = 13.58;
-    la.params[0][Tract::k_tongueBaseDiameter] = 2.9;
-    la.params[0][Tract::k_tongueTipIndex] = 40.45;
-    la.params[0][Tract::k_tongueTipDiameter] = 0.88;
-    
-    la.params[1][Tract::k_tongueBaseIndex] = 13.58;
-    la.params[1][Tract::k_tongueBaseDiameter] = 2.9;
-    la.params[1][Tract::k_tongueTipIndex] = 40.45;
-    la.params[1][Tract::k_tongueTipDiameter] = 2.33;
-    
-    la.duration = new float[la.numOfVowels];
-    la.duration[0] = 800.0f;
-    la.duration[1] = -1;
-    
-    pronunciation li;
-    li.name = "li";
-    li.numOfVowels = 2;
-    li.params = new float*[li.numOfVowels];
-    for (int i = 0; i < li.numOfVowels; i++) {
-        li.params[i] = new float[Tract::k_num_tract_params];
-    }
-    
-    li.params[0][Tract::k_tongueBaseIndex] = 7.8;
-    li.params[0][Tract::k_tongueBaseDiameter] = 2.61;
-    li.params[0][Tract::k_tongueTipIndex] = 40.45;
-    li.params[0][Tract::k_tongueTipDiameter] = 0.51;
-    
-    li.params[1][Tract::k_tongueBaseIndex] = 31.98;
-    li.params[1][Tract::k_tongueBaseDiameter] = 2.52;
-    li.params[1][Tract::k_tongueTipIndex] = 42;
-    li.params[1][Tract::k_tongueTipDiameter] = 2.5;
-    
-    li.duration = new float[li.numOfVowels];
-    li.duration[0] = 800.0f;
-    li.duration[1] = -1;
-    
-    availablePronunciations.push_back("la");
-    availablePronunciations.push_back("li");
-    pronunciationLookUp["la"] = la;
-    pronunciationLookUp["li"] = li;
+    float li_params[2][Tract::k_num_tract_params] =
+    {
+        {7.8, 2.61, 40.45, 0.51},
+        {31.98, 2.52, 42, 2.5}
+    };
+    float li_duration[2] = {800.0f, -1};
+    addPronunciation("li", 2, li_duration, li_params);
+
     Add("la");
     Add("li");
+}
+// make it easy to add hardcoded pronunciations
+void Sequencer::addPronunciation(string name, int numOfVowels, float *durationInMs, float params[][Tract::k_num_tract_params]) {
+    pronunciation newProunciation;
+    newProunciation.name = name;
+    newProunciation.numOfVowels = numOfVowels;
+    newProunciation.params = new float*[newProunciation.numOfVowels];
+    for (int i = 0; i < newProunciation.numOfVowels; i++) {
+        newProunciation.params[i] = new float[Tract::k_num_tract_params];
+        for (int j = 0; j < Tract::k_num_tract_params; j++) {
+            newProunciation.params[i][j] = params[i][j];
+        }
+    }
+    newProunciation.duration = new float[numOfVowels];
+    for (int i = 0; i < numOfVowels; i++) {
+        newProunciation.duration[i] = durationInMs[i];
+    }
+    pronunciationLookUp[name] = newProunciation;
+    availablePronunciations.push_back(name);
 }
 
 float* Sequencer::incPronunceAndGetVowel() {
@@ -96,7 +83,6 @@ float* Sequencer::incPronunceAndGetVowel() {
     } else {
         return 0;
     }
-    
 }
 
 float* Sequencer::incVowelAndGetVowel() {
@@ -111,7 +97,7 @@ float* Sequencer::incVowelAndGetVowel() {
     }
 }
 
-
+// add new pronounciation to sequencer
 void Sequencer::Add(string pronouciation) {
     curSequence.push_back(pronunciationLookUp[pronouciation]);
     curPronunceationIdx = 0;
