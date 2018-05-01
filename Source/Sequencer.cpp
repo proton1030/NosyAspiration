@@ -12,16 +12,16 @@
 #include <iostream>
 Sequencer::Sequencer(float sampleRate, float blockLength):
 curPronounciation(0),
-curPronunceationIdx(0),
-curVowelIdx(0),
-sampleRate(sampleRate),
-blockLength(blockLength)
+m_curPronunceationIdx(0),
+m_curVowelIdx(0),
+m_sampleRate(sampleRate),
+m_blockLength(blockLength)
 {
     
 }
 Sequencer::~Sequencer()
 {
-    for (vector<pronunciation>::iterator it = curSequence.begin(); it != curSequence.end(); it++) {
+    for (vector<pronunciation>::iterator it = m_curSequence.begin(); it != m_curSequence.end(); it++) {
         for (int i = 0; i < it->numOfVowels; i++) {
             delete [] it->params[i];
         }
@@ -32,7 +32,7 @@ Sequencer::~Sequencer()
 
 //adding in prounciation params
 void Sequencer::init() {
-    timeStep = blockLength/sampleRate * 1000;
+    m_timeStep = m_blockLength/m_sampleRate * 1000;
     
     float la_params[2][Tract::k_num_tract_params] =
     {
@@ -69,15 +69,15 @@ void Sequencer::addPronunciation(string name, int numOfVowels, float *durationIn
     for (int i = 0; i < numOfVowels; i++) {
         newProunciation.duration[i] = durationInMs[i];
     }
-    pronunciationLookUp[name] = newProunciation;
-    availablePronunciations.push_back(name);
+    m_pronunciationLookUp[name] = newProunciation;
+    m_availablePronunciations.push_back(name);
 }
 
 float* Sequencer::incPronunceAndGetVowel() {
-    if (curSequence.size() > 0){
-        curPronounciation = &curSequence[curPronunceationIdx];
-        curPronunceationIdx = (curPronunceationIdx + 1) % curSequence.size();
-        curVowelIdx = 0;
+    if (m_curSequence.size() > 0){
+        curPronounciation = &m_curSequence[m_curPronunceationIdx];
+        m_curPronunceationIdx = (m_curPronunceationIdx + 1) % m_curSequence.size();
+        m_curVowelIdx = 0;
         std::cout << curPronounciation->name << std::endl;
         return curPronounciation->params[0];
     } else {
@@ -87,11 +87,11 @@ float* Sequencer::incPronunceAndGetVowel() {
 
 float* Sequencer::incVowelAndGetVowel() {
     if (curPronounciation != 0) {
-        onsetTime += timeStep;
-        if (onsetTime >= curPronounciation->duration[curVowelIdx] && curPronounciation->duration[curVowelIdx] > 0) {
-            curVowelIdx++;
+        m_onsetTime += m_timeStep;
+        if (m_onsetTime >= curPronounciation->duration[m_curVowelIdx] && curPronounciation->duration[m_curVowelIdx] > 0) {
+            m_curVowelIdx++;
         }
-        return curPronounciation->params[curVowelIdx];
+        return curPronounciation->params[m_curVowelIdx];
     } else {
         return 0;
     }
@@ -99,23 +99,23 @@ float* Sequencer::incVowelAndGetVowel() {
 
 // add new pronounciation to sequencer
 void Sequencer::Add(string pronouciation) {
-    curSequence.push_back(pronunciationLookUp[pronouciation]);
-    curPronunceationIdx = 0;
+    m_curSequence.push_back(m_pronunciationLookUp[pronouciation]);
+    m_curPronunceationIdx = 0;
 }
 
 // pos is zero based
 void Sequencer::insert(string pronounciation, int pos) {
-    curSequence.insert(curSequence.begin() + pos, pronunciationLookUp[pronounciation]);
-    curPronunceationIdx = 0;
+    m_curSequence.insert(m_curSequence.begin() + pos, m_pronunciationLookUp[pronounciation]);
+    m_curPronunceationIdx = 0;
 }
 
 // pos is zero based
 void Sequencer::deleteNote(int pos) {
-    curSequence.erase(curSequence.begin() + pos);
-    curPronunceationIdx = 0;
+    m_curSequence.erase(m_curSequence.begin() + pos);
+    m_curPronunceationIdx = 0;
 }
 
 vector<string> Sequencer::getAvailablePronunciations(){
-    return availablePronunciations;
+    return m_availablePronunciations;
 }
 
