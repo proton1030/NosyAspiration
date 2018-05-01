@@ -81,7 +81,6 @@ void Sequencer::addPronunciation(string name, int numOfVowels, float *durationIn
 
 float* Sequencer::incPronunceAndGetVowel() {
     if (m_curSequence.size() > 0){
-//        curPronounciation = m_curSequence[m_curPronunceationIdx];
         m_preIdx = m_curPronunceationIdx;
         m_curPronunceationIdx = (m_curPronunceationIdx + 1) % m_curSequence.size();
         m_curVowelIdx = 0;

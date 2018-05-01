@@ -28,8 +28,8 @@ public:
     float* incVowelAndGetVowel();
 private:
     struct pronunciation {
-        float** params;
-        float*  duration;
+        float** params = 0;
+        float*  duration = 0;
         int     numOfVowels;
         string  name;
     };
