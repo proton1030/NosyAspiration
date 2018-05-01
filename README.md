@@ -3,13 +3,25 @@ An audio effect plugin sings with an audio input's pitch.
 
 ### Functionality
 
-A syllable pronunciation macro editor interface which allows user to form their own words/sentences and accepts MIDI input controlling in real-time.
+To add pronuciation to the step sequencer, drag pronunciation on the right to the middle drop box, dropped pronounciation will be added to step sequencer on the left. 
 
-A pitch tracker that can analyze monophonic audio input and map the extracted pitch to articulatory synthesis.
+To delete pronunciation from the step sequencer, drag pronunciation on the left to the middle drop box.
+
+Three knobs availble to adjust: Gain, Vibrato freq, Reverb amount
+
+*"**note that the plug-in params are tweaked for real electric guitar, the power of the guitar pick up may also affect the playing effect.**"*
 
 ### The speech sythnesis
 
 Referencing Neil Thapen's (https://dood.al/pinktrombone/) web audio implementation of procedural speech synthesis, and we translate javascript code into c++ code in an API fashion.
+
+### The Real-Time pitch tracking
+
+Using ACF to detect monophonic pitch, due to the nature of ACF algorithm, preferably 1024 blocksize should be used.
+
+### The Onset Detection
+
+A mixed measurements of RMS and PPM are used.
 
 ### Build Instruction
 
