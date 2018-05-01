@@ -1,27 +1,22 @@
 /*
   ==============================================================================
 
-    DragableSource.h
-    Created: 28 Apr 2018 1:58:35pm
+    DragableTargetList.h
+    Created: 30 Apr 2018 10:36:17pm
     Author:  Hanyu Liu
 
   ==============================================================================
 */
 
 #pragma once
-#include "../JuceLibraryCode/JuceHeader.h"
-#include "Sequencer.h"
-#include <vector>
-#include <string>
 
-
-struct DragableSource  : public ListBoxModel
+struct DragableTargetList  : public ListBoxModel
 {
     // The following methods implement the necessary virtual functions from ListBoxModel,
     // telling the listbox how many rows there are, painting them, etc.
     int getNumRows() override
     {
-        return int(wordsLib.size());
+        return numRows;
     }
     
     void paintListBoxItem (int rowNumber, Graphics& g,
@@ -33,10 +28,10 @@ struct DragableSource  : public ListBoxModel
         g.setColour (Colour::fromRGB(176, 59, 82));
         g.drawRoundedRectangle(8, 8, width-16, height-16, 5.0, 3.0);
         g.setColour (Colours::lightgrey);
-        g.drawText (wordsLib[rowNumber],
+        g.drawText ("Thing #" + String (rowNumber + 1),
                     0, 0, width, height,
                     Justification::centred, true);
-
+        
         if (rowIsSelected)
         {
             g.setColour (Colour::fromRGBA(176, 59, 82, 45));
@@ -47,19 +42,13 @@ struct DragableSource  : public ListBoxModel
     
     var getDragSourceDescription (const SparseSet<int>& selectedRows) override
     {
-        String rows;
-
+        StringArray rows;
+        
         for (int i = 0; i < selectedRows.size(); ++i)
-            rows = wordsLib[i];
+            rows.add (String (selectedRows[i] + 1));
         
-        
-        return rows;
-    }
-    
-    void getWordsInfo(vector<string> words)
-    {
-        wordsLib = words;
-        
+        numRows++;
+        return rows.joinIntoString (", ");
     }
     
     const Font& getFont()
@@ -68,5 +57,6 @@ struct DragableSource  : public ListBoxModel
         return wacky;
     }
     
-    vector<string> wordsLib;
+    int numRows = 0;
+    
 };

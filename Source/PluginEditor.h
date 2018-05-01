@@ -14,6 +14,7 @@
 #include "PluginProcessor.h"
 #include "DragableSource.h"
 #include "DragableTarget.h"
+#include "DragableTargetList.h"
 
 
 //==============================================================================
@@ -39,7 +40,9 @@ private:
     // access the processor object that created it.
     NosyAspirationAudioProcessor& processor;
     ListBox sourceListBox  { "D+D source", nullptr };
+    ListBox targetListBox  { "D+D source", nullptr };
     DragableSource sourceModel;
+    DragableTargetList targetModel;
     DragableTarget target;
     
     

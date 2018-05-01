@@ -36,6 +36,8 @@
               file="Source/DragableSource.h"/>
         <FILE id="bnXndE" name="DragableTarget.h" compile="0" resource="0"
               file="Source/DragableTarget.h"/>
+        <FILE id="EffRdD" name="DragableTargetList.h" compile="0" resource="0"
+              file="Source/DragableTargetList.h"/>
         <FILE id="OSorUI" name="WordListItem.h" compile="0" resource="0" file="Source/WordListItem.h"/>
       </GROUP>
       <GROUP id="{4B7812F4-78FF-E9E3-01E4-5E769371612B}" name="OnsetDetection">

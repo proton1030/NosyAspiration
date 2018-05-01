@@ -19,15 +19,27 @@ NosyAspirationAudioProcessorEditor::NosyAspirationAudioProcessorEditor (NosyAspi
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     
+    sourceModel.getWordsInfo(processor.m_CSequencer->getAvailablePronunciations());
+    
     sourceListBox.setModel (&sourceModel);
     sourceListBox.setRowHeight(90);
     sourceListBox.setOpaque(true);
     sourceListBox.setColour(ListBox::ColourIds::backgroundColourId , Colour::fromFloatRGBA (1.0f, 0.0f, 0.0f, 0.0f));
     sourceListBox.getViewport()->setScrollBarsShown(false, false, true, true);
-
+    
+//    targetModel.numRows = 1;
+    targetListBox.setModel (&targetModel);
+    targetListBox.setRowHeight(40);
+    targetListBox.setOpaque(true);
+    targetListBox.setColour(ListBox::ColourIds::backgroundColourId , Colour::fromFloatRGBA (1.0f, 0.0f, 0.0f, 0.0f));
     
     addAndMakeVisible (sourceListBox);
+    addAndMakeVisible (targetListBox);
     addAndMakeVisible (target);
+    target.getTargetModel(targetModel, targetListBox, *processor.m_CSequencer);
+    
+    
+    
     
 //    addAndMakeVisible (sliderFreq = new Slider ("Frequency"));
 //    sliderFreq->setRange (40, 600, 0.01);
@@ -148,8 +160,9 @@ void NosyAspirationAudioProcessorEditor::resized()
 //    sliderTongueTipDiam->setBounds (proportionOfWidth (0.23f), proportionOfHeight (0.7000f), proportionOfWidth (0.720f), proportionOfHeight (0.1000f));
     auto r = getLocalBounds().reduced (8);
     sourceListBox.setBounds (630, 190, 130, 380);
-    target       .setBounds (30, 180, 550, 120);
-    target.getViewport()->setTransform(AffineTransform::rotation(3.2));
+    targetListBox.setBounds(30, 180, 550, 120);
+    target      .setBounds (30, 480, 550, 120);
+//    target.getViewport()->setTransform(AffineTransform::rotation(3.2));
 }
 
 void NosyAspirationAudioProcessorEditor::sliderValueChanged (Slider* sliderThatWasMoved)

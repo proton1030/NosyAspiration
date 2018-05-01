@@ -50,8 +50,8 @@ void Sequencer::init() {
     float li_duration[2] = {800.0f, -1};
     addPronunciation("li", 2, li_duration, li_params);
 
-    Add("la");
-    Add("li");
+//    Add("la");
+//    Add("li");
 }
 // make it easy to add hardcoded pronunciations
 void Sequencer::addPronunciation(string name, int numOfVowels, float *durationInMs, float params[][Tract::k_num_tract_params]) {
@@ -101,6 +101,7 @@ float* Sequencer::incVowelAndGetVowel() {
 void Sequencer::Add(string pronouciation) {
     m_curSequence.push_back(m_pronunciationLookUp[pronouciation]);
     m_curPronunceationIdx = 0;
+    std::cout << m_curSequence.size() << std::endl;
 }
 
 // pos is zero based
