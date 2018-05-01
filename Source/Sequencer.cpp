@@ -34,24 +34,34 @@ Sequencer::~Sequencer()
 void Sequencer::init() {
     m_timeStep = m_blockLength/m_sampleRate * 1000;
     
-    float la_params[2][Tract::k_num_tract_params] =
+    float ya_params[2][Tract::k_num_tract_params] =
     {
         {13.58, 2.9, 40.45, 0.88},
         {13.58, 2.9, 40.45, 2.33}
     };
-    float la_duration[2] = {800.0f, -1};
-    addPronunciation("la", 2, la_duration, la_params);
+    float ya_duration[2] = {800.0f, -1};
+    addPronunciation("ya", 2, ya_duration, ya_params);
     
-    float li_params[2][Tract::k_num_tract_params] =
+    float ei_params[2][Tract::k_num_tract_params] =
     {
         {7.8, 2.61, 40.45, 0.51},
         {31.98, 2.52, 42, 2.5}
     };
-    float li_duration[2] = {800.0f, -1};
-    addPronunciation("li", 2, li_duration, li_params);
+    float ei_duration[2] = {800.0f, -1};
+    addPronunciation("ei", 2, ei_duration, ei_params);
 
-//    Add("la");
-//    Add("li");
+    
+    float ri_params[2][Tract::k_num_tract_params] =
+    {
+        {28.91, 2.43, 16.44, 0.48},
+        {28.91, 2.43, 16.44, 0.48}
+    };
+    float ri_duration[2] = {1000.0f, -1};
+    addPronunciation("ri", 2, ri_duration, ri_params);
+    
+    Add("ya");
+    Add("ei");
+    Add("ri");
 }
 // make it easy to add hardcoded pronunciations
 void Sequencer::addPronunciation(string name, int numOfVowels, float *durationInMs, float params[][Tract::k_num_tract_params]) {
@@ -75,7 +85,12 @@ void Sequencer::addPronunciation(string name, int numOfVowels, float *durationIn
 
 float* Sequencer::incPronunceAndGetVowel() {
     if (m_curSequence.size() > 0){
-        curPronounciation = &m_curSequence[m_curPronunceationIdx];
+        if (m_curPronunceationIdx < m_curSequence.size()) {
+            curPronounciation = &m_curSequence[m_curPronunceationIdx];
+        } else {
+            curPronounciation = &m_curSequence[0];
+            m_curPronunceationIdx = 0;
+        }
         m_curPronunceationIdx = (m_curPronunceationIdx + 1) % m_curSequence.size();
         m_curVowelIdx = 0;
         std::cout << curPronounciation->name << std::endl;

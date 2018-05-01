@@ -117,16 +117,16 @@ NosyAspirationAudioProcessorEditor::NosyAspirationAudioProcessorEditor (NosyAspi
 
 NosyAspirationAudioProcessorEditor::~NosyAspirationAudioProcessorEditor()
 {
-//    sliderFreq = nullptr;
-//    sliderTonguePos = nullptr;
-//    sliderTongueDiam = nullptr;
-//    sliderTongueTipPos = nullptr;
-//    sliderTongueTipDiam = nullptr;
-//    lSliderFreq = nullptr;
-//    lSliderTonguePos = nullptr;
-//    lSliderTongueDiam = nullptr;
-//    lSliderTongueTipPos = nullptr;
-//    lSliderTongueTipDiam = nullptr;
+    sliderFreq = nullptr;
+    sliderTonguePos = nullptr;
+    sliderTongueDiam = nullptr;
+    sliderTongueTipPos = nullptr;
+    sliderTongueTipDiam = nullptr;
+    lSliderFreq = nullptr;
+    lSliderTonguePos = nullptr;
+    lSliderTongueDiam = nullptr;
+    lSliderTongueTipPos = nullptr;
+    lSliderTongueTipDiam = nullptr;
 }
 
 //==============================================================================
