@@ -11,7 +11,13 @@
 #include "PitchTrack.h"
 #include <cmath>
 #include <iostream>
-PitchTrack::PitchTrack()
+PitchTrack::PitchTrack():
+m_fft(0),
+m_blockLength(0),
+m_sampleRate(0),
+m_fftSize(0),
+m_fftBuff(0),
+m_acfBuff(0)
 {
 
 }
