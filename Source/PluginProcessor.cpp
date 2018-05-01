@@ -154,8 +154,6 @@ void NosyAspirationAudioProcessor::processBlock (AudioSampleBuffer& buffer, Midi
     for (int i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
     
-    
-
     auto inputBuff = buffer.getReadPointer(0);
     
     float f0 = m_CPitchTrak->getFundamentalFreq((float*)inputBuff);

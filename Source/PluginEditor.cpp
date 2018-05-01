@@ -25,7 +25,7 @@ NosyAspirationAudioProcessorEditor::NosyAspirationAudioProcessorEditor (NosyAspi
     sourceListBox.setColour(ListBox::ColourIds::backgroundColourId , Colour::fromFloatRGBA (1.0f, 0.0f, 0.0f, 0.0f));
     sourceListBox.getViewport()->setScrollBarsShown(false, false, true, true);
 
-    
+
     addAndMakeVisible (sourceListBox);
     addAndMakeVisible (target);
     
@@ -105,16 +105,16 @@ NosyAspirationAudioProcessorEditor::NosyAspirationAudioProcessorEditor (NosyAspi
 
 NosyAspirationAudioProcessorEditor::~NosyAspirationAudioProcessorEditor()
 {
-//    sliderFreq = nullptr;
-//    sliderTonguePos = nullptr;
-//    sliderTongueDiam = nullptr;
-//    sliderTongueTipPos = nullptr;
-//    sliderTongueTipDiam = nullptr;
-//    lSliderFreq = nullptr;
-//    lSliderTonguePos = nullptr;
-//    lSliderTongueDiam = nullptr;
-//    lSliderTongueTipPos = nullptr;
-//    lSliderTongueTipDiam = nullptr;
+    sliderFreq = nullptr;
+    sliderTonguePos = nullptr;
+    sliderTongueDiam = nullptr;
+    sliderTongueTipPos = nullptr;
+    sliderTongueTipDiam = nullptr;
+    lSliderFreq = nullptr;
+    lSliderTonguePos = nullptr;
+    lSliderTongueDiam = nullptr;
+    lSliderTongueTipPos = nullptr;
+    lSliderTongueTipDiam = nullptr;
 }
 
 //==============================================================================
