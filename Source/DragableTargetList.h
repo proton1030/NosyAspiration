@@ -49,7 +49,6 @@ struct DragableTargetList  : public ListBoxModel
         for (int i = 0; i < selectedRows.size(); ++i)
             rows.add (String (selectedRows[i] + 1));
         activeRowNum = selectedRows[0];
-//        wordList.erase(wordList.begin() + selectedRows[0]);
         return rows.joinIntoString (", ");
     }
     

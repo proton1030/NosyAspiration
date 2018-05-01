@@ -13,7 +13,6 @@
 #include "WordListItem.h"
 #include "DragableTargetList.h"
 #include "Sequencer.h"
-#include <iostream>
 
 
 class DragableTarget  : public Component, public DragAndDropTarget
@@ -24,7 +23,10 @@ public:
         
     }
     
-    ~DragableTarget(){}
+    ~DragableTarget()
+    {
+        
+    }
     // The following methods implement the necessary virtual functions from ListBoxModel,
     // telling the listbox how many rows there are, painting them, etc.
     
@@ -35,7 +37,6 @@ public:
     
     void paint (Graphics& g) override
     {
-//        g.fillAll(Colours::red);
         if (somethingIsBeingDraggedOver)
         {
             g.setColour (Colours::hotpink);
@@ -99,10 +100,6 @@ public:
     
     void itemDropped (const SourceDetails& dragSourceDetails) override
     {
-//        message = "Items dropped: " + dragSourceDetails.description.toString();
-        //        m_iActiveWords ++;
-//        activeWords.add(new WordListItem());
-
         if (dragSourceDetails.sourceComponent.get() == listSourceM)
         {
             String name = dragSourceDetails.description.toString();

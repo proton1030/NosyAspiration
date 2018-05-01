@@ -11,7 +11,6 @@
 #include "OnsetDetection.h"
 #include <math.h>
 #include "../JuceLibraryCode/JuceHeader.h"
-#include <iostream>
 
 OnsetDetection::OnsetDetection() : m_fAlphaCoeff{0.01 , 0.1}, m_fZCRThres(0.08), m_fRMSThres(0.002), m_fPpmDiffThres(0.0002), m_iOnsetCooldownThres(10)
 {
@@ -59,7 +58,7 @@ void OnsetDetection::updateOnsetDetection(AudioSampleBuffer& buffer)
         {
             bOnsetDetection = true;
             m_bOnsetTriggered = true;
-            std::cout << "Onset" << std::endl;
+//            std::cout << "Onset" << std::endl;
         }
     }
     else
@@ -74,12 +73,7 @@ void OnsetDetection::updateOnsetDetection(AudioSampleBuffer& buffer)
                 m_bOnsetTriggered = false;
             }
         }
-//        bOnsetDetection = false;
     }
-//    std::cout << m_fCurrentBlockVPpm - m_fCurrentBlockMAVPpm << std::endl;
-//    std::cout << (m_fCurrentBlockZCR < m_fZCRThres) << " " << (m_fCurrentBlockRMS > m_fRMSThres) << " " << (m_fCurrentBlockVPpm - m_fCurrentBlockMAVPpm > m_fPpmDiffThres) << std::endl;
-    
-    
 }
 
 void OnsetDetection::calculatePpmAndZCR(const float* inputBuff)

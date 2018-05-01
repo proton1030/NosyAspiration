@@ -10,7 +10,6 @@
 
 #include "PitchTrack.h"
 #include <cmath>
-#include <iostream>
 PitchTrack::PitchTrack():
 m_fft(0),
 m_blockLength(0),
