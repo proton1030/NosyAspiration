@@ -107,13 +107,14 @@ float* Sequencer::incVowelAndGetVowel() {
 void Sequencer::Add(string pronouciation) {
     m_curSequence.push_back(m_pronunciationLookUp[pronouciation]);
     m_curPronunceationIdx = 0;
-//    std::cout << m_curSequence.size() << std::endl;
 }
 
 // pos is zero based
 void Sequencer::insert(string pronounciation, int pos) {
     m_curSequence.insert(m_curSequence.begin() + pos, m_pronunciationLookUp[pronounciation]);
     m_curPronunceationIdx = 0;
+
+    
 }
 
 // pos is zero based
@@ -124,5 +125,16 @@ void Sequencer::deleteNote(int pos) {
 
 vector<string> Sequencer::getAvailablePronunciations(){
     return m_availablePronunciations;
+}
+
+vector<string> Sequencer::getCurrentPronunciations(){
+    vector<string> currentSequence;
+    for (int i = 0; i < int(m_curSequence.size()); i++)
+        currentSequence.push_back(m_curSequence[i].name);
+    return currentSequence;
+}
+
+int Sequencer::getCurrentPronounciationIdx(){
+    return m_preIdx;
 }
 

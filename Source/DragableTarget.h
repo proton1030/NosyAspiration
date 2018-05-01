@@ -15,12 +15,12 @@
 #include "Sequencer.h"
 
 
-class DragableTarget  : public Component, public DragAndDropTarget
+class DragableTarget  : public Component, public DragAndDropTarget, public Timer
 {
 public:
     DragableTarget()
     {
-        
+        startTimer (100);
     }
     
     ~DragableTarget()
@@ -60,12 +60,13 @@ public:
         return rows.joinIntoString (", ");
     }
     
-    void getTargetModel(DragableTargetList &model, ListBox &listB, ListBox &listSource, Sequencer &seq)
+    void getTargetModel(DragableTargetList &model, ListBox &listB, ListBox &listSource, Sequencer &seq, NosyAspirationAudioProcessor& processor)
     {
         targetM = &model;
         listM = &listB;
         listSourceM = &listSource;
         seqM = &seq;
+        processorM = &processor;
     }
     
     const Font& getFont()
@@ -112,12 +113,19 @@ public:
             seqM->deleteNote(targetM->activeRowNum);
         }
         listM->updateContent();
-        listM->repaint();
+        
         somethingIsBeingDraggedOver = false;
         repaint();
     }
     
 private:
+    void timerCallback() override
+    {
+        targetM->highlightRowNum = processorM->m_CSequencer->getCurrentPronounciationIdx();
+        listM->updateContent();
+        listM->repaint();
+    }
+    
     String message  {""};
     bool somethingIsBeingDraggedOver = false;
     
@@ -126,5 +134,6 @@ private:
     ListBox*                listM = 0;
     ListBox*                listSourceM = 0;
     Sequencer*              seqM = 0;
+    NosyAspirationAudioProcessor* processorM = 0;
 };
 

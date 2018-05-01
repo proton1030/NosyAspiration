@@ -53,7 +53,6 @@ struct DragableSource  : public ListBoxModel
     void getWordsInfo(vector<string> words)
     {
         wordsLib = words;
-        
     }
     
     const Font& getFont()

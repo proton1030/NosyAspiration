@@ -11,6 +11,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+
 //==============================================================================
 NosyAspirationAudioProcessor::NosyAspirationAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -24,7 +25,6 @@ NosyAspirationAudioProcessor::NosyAspirationAudioProcessor()
                        )
 #endif
 {
-//    audioDeviceManager.closeAudioDevice ();
 }
 
 NosyAspirationAudioProcessor::~NosyAspirationAudioProcessor()
@@ -107,6 +107,8 @@ void NosyAspirationAudioProcessor::prepareToPlay (double sampleRate, int samples
     m_COnsetDetection->init(samplesPerBlock, sampleRate);
     m_CSequencer = new Sequencer(sampleRate, samplesPerBlock);
     m_CSequencer->init();
+    m_CReverb = new juce::Reverb();
+    m_CReverb->setSampleRate(sampleRate);
 }
 
 void NosyAspirationAudioProcessor::releaseResources()
@@ -164,6 +166,7 @@ void NosyAspirationAudioProcessor::processBlock (AudioSampleBuffer& buffer, Midi
     float* tractParams = 0;
     if (m_COnsetDetection->bOnsetDetection) {
         tractParams = m_CSequencer->incPronunceAndGetVowel();
+        
     } else {
         tractParams = m_CSequencer->incVowelAndGetVowel();
     }
@@ -181,6 +184,13 @@ void NosyAspirationAudioProcessor::processBlock (AudioSampleBuffer& buffer, Midi
         float* other_channel_data = buffer.getWritePointer(channel);
         memcpy(other_channel_data, outputBuff, sizeof(float) * buffer.getNumSamples());
     }
+    
+    m_ReverbParams = m_CReverb->getParameters();
+    m_ReverbParams.dryLevel = 1.0F - m_reverbDryWet;
+    m_ReverbParams.wetLevel = m_reverbDryWet;
+    m_CReverb->setParameters(m_ReverbParams);
+    m_CReverb->processStereo(buffer.getWritePointer(0), buffer.getWritePointer(1), buffer.getNumSamples());
+    
     
     for (int i = 0; i < totalNumInputChannels; i++) {
         if (rms > 2e-2) {

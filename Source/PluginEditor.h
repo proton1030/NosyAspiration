@@ -42,7 +42,7 @@ private:
     DragableSource sourceModel;
     DragableTargetList targetModel;
     DragableTarget target;
-    ScopedPointer<Slider> knobGain, knobVibrato;
+    ScopedPointer<Slider> knobGain, knobVibrato, knobReverb;
     
     
 //    ScopedPointer<Slider> sliderFreq, sliderTonguePos, sliderTongueDiam, sliderTongueTipPos, sliderTongueTipDiam;

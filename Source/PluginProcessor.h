@@ -65,11 +65,13 @@ public:
     PitchTrack*         m_CPitchTrak = 0;
     OnsetDetection*     m_COnsetDetection = 0;
     Sequencer*          m_CSequencer = 0;
-    float               m_gain = 1;
-    float               m_smoothGain = 0;
+    float               m_gain = 1.F;
+    float               m_smoothGain = 0.F;
+    float               m_reverbDryWet = 0.F;
+    juce::Reverb*       m_CReverb = 0;
+    juce::Reverb::Parameters    m_ReverbParams;
 
 private:
-    AudioDeviceManager audioDeviceManager;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NosyAspirationAudioProcessor)

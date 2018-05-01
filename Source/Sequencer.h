@@ -26,6 +26,8 @@ public:
     vector<string> getAvailablePronunciations();
     float* incPronunceAndGetVowel();
     float* incVowelAndGetVowel();
+    vector<string> getCurrentPronunciations();
+    int getCurrentPronounciationIdx();
 private:
     struct pronunciation {
         float** params = 0;

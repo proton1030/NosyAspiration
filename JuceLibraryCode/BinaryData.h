@@ -12,7 +12,7 @@ namespace BinaryData
     const int            Chalkduster_ttfSize = 486860;
 
     extern const char*   background_jpg;
-    const int            background_jpgSize = 220361;
+    const int            background_jpgSize = 223286;
 
     extern const char*   omnessemiboldwebfont_ttf;
     const int            omnessemiboldwebfont_ttfSize = 55832;
