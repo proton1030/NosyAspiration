@@ -106,7 +106,8 @@ void NosyAspirationAudioProcessor::prepareToPlay (double sampleRate, int samples
     m_CPitchTrak->init(samplesPerBlock, sampleRate);
     m_COnsetDetection = new OnsetDetection();
     m_COnsetDetection->init(samplesPerBlock, sampleRate);
-
+    m_CSequencer = new Sequencer(sampleRate, samplesPerBlock);
+    m_CSequencer->init();
 }
 
 void NosyAspirationAudioProcessor::releaseResources()
@@ -114,7 +115,7 @@ void NosyAspirationAudioProcessor::releaseResources()
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
     m_CPitchTrak->~PitchTrack();
-//    m_CGlottis->~Glottis();
+    m_CGlottis->~Glottis();
     m_CTract->~Tract();
 }
 
@@ -148,28 +149,51 @@ void NosyAspirationAudioProcessor::processBlock (AudioSampleBuffer& buffer, Midi
     const int totalNumInputChannels  = getTotalNumInputChannels();
     const int totalNumOutputChannels = getTotalNumOutputChannels();
 
+    float rms = buffer.getRMSLevel(0, 0, buffer.getNumSamples());
+
     for (int i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
     
     
 
-//    auto inputBuff = buffer.getReadPointer(0);
-//    float rms = buffer.getRMSLevel(0, 0, blockSize);
-//
-//    float f0 = m_CPitchTrak->getFundamentalFreq((float*)inputBuff);
-//    std::cout << rms << std::endl;
-//    m_CGlottis->setParam(Glottis::k_frequency, f0);
-//    float* outputBuff = buffer.getWritePointer (0);
-//    m_CGlottis->process(outputBuff, outputBuff, buffer.getNumSamples());
-//    m_CTract->process(outputBuff, outputBuff, buffer.getNumSamples());
-//    for (int channel = 1; channel < totalNumInputChannels; channel++) {
-//        float* other_channel_data = buffer.getWritePointer(channel);
-//        memcpy(other_channel_data, outputBuff, sizeof(float) * buffer.getNumSamples());
-//    }
-//    buffer.applyGain(0, 0, blockSize, rms * 8);
-//    buffer.applyGain(1, 0, blockSize, rms * 8);
+    auto inputBuff = buffer.getReadPointer(0);
     
+    float f0 = m_CPitchTrak->getFundamentalFreq((float*)inputBuff);
     
+    m_CGlottis->setParam(Glottis::k_frequency, f0);
+    
+    m_COnsetDetection->updateOnsetDetection(buffer);
+    
+    float* tractParams = 0;
+    if (m_COnsetDetection->bOnsetDetection) {
+        tractParams = m_CSequencer->incPronunceAndGetVowel();
+    } else {
+        tractParams = m_CSequencer->incVowelAndGetVowel();
+    }
+    if (tractParams != 0) {
+        m_CTract->setParam(Tract::k_tongueTipIndex, tractParams[Tract::k_tongueTipIndex]);
+        m_CTract->setParam(Tract::k_tongueBaseIndex, tractParams[Tract::k_tongueBaseIndex]);
+        m_CTract->setParam(Tract::k_tongueTipDiameter, tractParams[Tract::k_tongueTipDiameter]);
+        m_CTract->setParam(Tract::k_tongueBaseDiameter, tractParams[Tract::k_tongueBaseDiameter]);
+    }
+    
+    float* outputBuff = buffer.getWritePointer (0);
+    m_CGlottis->process(outputBuff, outputBuff, buffer.getNumSamples());
+    m_CTract->process(outputBuff, outputBuff, buffer.getNumSamples());
+    for (int channel = 1; channel < totalNumInputChannels; channel++) {
+        float* other_channel_data = buffer.getWritePointer(channel);
+        memcpy(other_channel_data, outputBuff, sizeof(float) * buffer.getNumSamples());
+    }
+    
+    for (int i = 0; i < totalNumInputChannels; i++) {
+        if (rms > 2e-2) {
+            buffer.applyGain(i, 0, buffer.getNumSamples(), m_gain);
+            m_smoothGain = m_gain;
+        } else {
+            m_smoothGain /= 1.25f;
+            buffer.applyGain(i, 0, buffer.getNumSamples(), m_smoothGain);
+        }
+    }
 }
 
 //==============================================================================

@@ -38,7 +38,8 @@ int WavefromGen::getWaveformLength(){
 
 void WavefromGen::updateFreq(float new_frequency, float vibrato = 0) {
     if (new_frequency > smooth_frequency) {
-        smooth_frequency = fmin(smooth_frequency * 1.1, new_frequency);
+        float rampSpeed = 0.00041f * (new_frequency - smooth_frequency) + 1.0918f;
+        smooth_frequency = fmin(smooth_frequency * rampSpeed, new_frequency);
     }
     if (new_frequency < smooth_frequency) {
         smooth_frequency = fmax(smooth_frequency / 1.1, new_frequency);

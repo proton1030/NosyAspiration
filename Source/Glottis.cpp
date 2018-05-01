@@ -21,8 +21,8 @@ num_channels(num_channels)
     setParam(k_intensity, 1);
     setParam(k_frequency, 140);
     setParam(k_tenseness, 0.6);
-    setParam(k_vibrato_freq, 6);
-    setParam(k_vibrato_amount, 0.005);
+    setParam(k_vibrato_freq, 1);
+    setParam(k_vibrato_amount, 0.010);
 }
 
 Glottis::~Glottis(){
@@ -70,8 +70,8 @@ void Glottis::process(float *input_buffer, float *output_buffer, int num_samples
 void Glottis::finishBlock() {
     float vibrato = 0;
     vibrato += params[k_vibrato_amount] * sin(2*M_PI * waveform_gen->getTotalTime() * params[k_vibrato_freq]);
-    vibrato += 0.02 * SimplexNoise::simpleNoise1dWarper(waveform_gen->getTotalTime() * 4.07);
-    vibrato += 0.04 * SimplexNoise::simpleNoise1dWarper(waveform_gen->getTotalTime() * 2.15);
+    vibrato += 0.005 * SimplexNoise::simpleNoise1dWarper(waveform_gen->getTotalTime() * 4.07);
+//    vibrato += 0.02 * SimplexNoise::simpleNoise1dWarper(waveform_gen->getTotalTime() * 2.15);
     waveform_gen->updateFreq(params[k_frequency], vibrato);
     waveform_gen->updateTenseness(params[k_tenseness]);
 }

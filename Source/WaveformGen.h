@@ -12,9 +12,9 @@
 class WavefromGen {
 public:
     WavefromGen(int sample_rate);
-    void init();
+    void  init();
     float runStep(float lambda);
-    void setupWaveform(float lambda);
+    void  setupWaveform(float lambda);
     float normalizedWaveform(float t);
     float getTimeInWaveForm();
     float getTotalTime();
@@ -30,7 +30,7 @@ private:
     float time_step;
     float time_in_waveform;
     float total_time;
-    float   waveform_length;
+    float waveform_length;
     int   sample_rate = 44100;
     struct waveformParam {
         float Rd;

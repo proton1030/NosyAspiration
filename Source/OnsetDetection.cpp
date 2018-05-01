@@ -38,7 +38,7 @@ void OnsetDetection::init(int blockLength, int sampleRate)
     m_fAlpha[0] = 1.F - exp(-2.2F / (float(m_iSampleRate) * m_fAlphaCoeff[0]));
     m_fAlpha[1] = 1.F - exp(-2.2F / (float(m_iSampleRate) * m_fAlphaCoeff[1]));
     
-    bOnsetDetection = 0;
+    bOnsetDetection = false;
 }
 
 void OnsetDetection::updateOnsetDetection(AudioSampleBuffer& buffer)
@@ -49,11 +49,15 @@ void OnsetDetection::updateOnsetDetection(AudioSampleBuffer& buffer)
     m_fCurrentBlockMAVPpm = (m_fCurrentBlockVPpm + m_fLastBlockVPpm) / 2.F;
     m_fLastBlockVPpm = m_fCurrentBlockVPpm;
     
+    if (bOnsetDetection) {
+        bOnsetDetection = false;
+    }
+    
     if (m_fCurrentBlockZCR < m_fZCRThres && m_fCurrentBlockRMS > m_fRMSThres && m_fCurrentBlockVPpm - m_fCurrentBlockMAVPpm > m_fPpmDiffThres)
     {
         if (!m_bOnsetTriggered)
         {
-            bOnsetDetection = 1;
+            bOnsetDetection = true;
             m_bOnsetTriggered = true;
             std::cout << "Onset" << std::endl;
         }
@@ -70,7 +74,7 @@ void OnsetDetection::updateOnsetDetection(AudioSampleBuffer& buffer)
                 m_bOnsetTriggered = false;
             }
         }
-        bOnsetDetection = 0;
+//        bOnsetDetection = false;
     }
 //    std::cout << m_fCurrentBlockVPpm - m_fCurrentBlockMAVPpm << std::endl;
 //    std::cout << (m_fCurrentBlockZCR < m_fZCRThres) << " " << (m_fCurrentBlockRMS > m_fRMSThres) << " " << (m_fCurrentBlockVPpm - m_fCurrentBlockMAVPpm > m_fPpmDiffThres) << std::endl;
@@ -95,7 +99,6 @@ void OnsetDetection::calculatePpmAndZCR(const float* inputBuff)
         {
             m_fVPpmTemp = m_fAlpha[0] * abs(inputBuff[iSample]) + (1 - m_fAlpha[0]) * m_fVPpmTemp;
         }
-
         if (fMaxValue < m_fVPpmTemp)
         {
             fMaxValue = m_fVPpmTemp;

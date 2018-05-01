@@ -20,7 +20,7 @@ public:
     void init(int blockLength, int sampleRate);
     void updateOnsetDetection(AudioSampleBuffer& buffer);
     
-    Value bOnsetDetection;
+    bool bOnsetDetection;
     
 private:
     const float m_fAlphaCoeff[2];

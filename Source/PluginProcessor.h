@@ -15,6 +15,7 @@
 #include "Tract.h"
 #include "PitchTrack.h"
 #include "OnsetDetection.h"
+#include "Sequencer.h"
 
 //==============================================================================
 /**
@@ -63,7 +64,9 @@ public:
     Tract*              m_CTract = 0;
     PitchTrack*         m_CPitchTrak = 0;
     OnsetDetection*     m_COnsetDetection = 0;
-    int                 blockSize = 0;
+    Sequencer*          m_CSequencer = 0;
+    float               m_gain = 1;
+    float               m_smoothGain = 0;
 
 private:
 
