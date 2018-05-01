@@ -23,7 +23,10 @@ public:
         
     }
     
-    ~DragableTarget(){}
+    ~DragableTarget()
+    {
+        
+    }
     // The following methods implement the necessary virtual functions from ListBoxModel,
     // telling the listbox how many rows there are, painting them, etc.
     
