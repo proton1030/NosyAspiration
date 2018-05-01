@@ -11,7 +11,7 @@
 #include "Sequencer.h"
 #include <iostream>
 Sequencer::Sequencer(float sampleRate, float blockLength):
-curPronounciation(0),
+m_preIdx(0),
 m_curPronunceationIdx(0),
 m_curVowelIdx(0),
 m_sampleRate(sampleRate),
@@ -39,7 +39,7 @@ void Sequencer::init() {
         {13.58, 2.9, 40.45, 0.88},
         {13.58, 2.9, 40.45, 2.33}
     };
-    float ya_duration[2] = {800.0f, -1};
+    float ya_duration[2] = {80.0f, -1};
     addPronunciation("ya", 2, ya_duration, ya_params);
     
     float ei_params[2][Tract::k_num_tract_params] =
@@ -47,7 +47,7 @@ void Sequencer::init() {
         {7.8, 2.61, 40.45, 0.51},
         {31.98, 2.52, 42, 2.5}
     };
-    float ei_duration[2] = {800.0f, -1};
+    float ei_duration[2] = {80.0f, -1};
     addPronunciation("ei", 2, ei_duration, ei_params);
 
     
@@ -56,12 +56,8 @@ void Sequencer::init() {
         {28.91, 2.43, 16.44, 0.48},
         {28.91, 2.43, 16.44, 0.48}
     };
-    float ri_duration[2] = {1000.0f, -1};
+    float ri_duration[2] = {100.0f, -1};
     addPronunciation("ri", 2, ri_duration, ri_params);
-    
-//    Add("ya");
-//    Add("ei");
-//    Add("ri");
 }
 // make it easy to add hardcoded pronunciations
 void Sequencer::addPronunciation(string name, int numOfVowels, float *durationInMs, float params[][Tract::k_num_tract_params]) {
@@ -85,28 +81,25 @@ void Sequencer::addPronunciation(string name, int numOfVowels, float *durationIn
 
 float* Sequencer::incPronunceAndGetVowel() {
     if (m_curSequence.size() > 0){
-        if (m_curPronunceationIdx < m_curSequence.size()) {
-            curPronounciation = &m_curSequence[m_curPronunceationIdx];
-        } else {
-            curPronounciation = &m_curSequence[0];
-            m_curPronunceationIdx = 0;
-        }
+//        curPronounciation = m_curSequence[m_curPronunceationIdx];
+        m_preIdx = m_curPronunceationIdx;
         m_curPronunceationIdx = (m_curPronunceationIdx + 1) % m_curSequence.size();
         m_curVowelIdx = 0;
-        std::cout << curPronounciation->name << std::endl;
-        return curPronounciation->params[0];
+        m_onsetTime = 0;
+        std::cout << m_curSequence[m_preIdx].name << std::endl;
+        return m_curSequence[m_preIdx].params[0];
     } else {
         return 0;
     }
 }
 
 float* Sequencer::incVowelAndGetVowel() {
-    if (curPronounciation != 0) {
+    if (m_curSequence.size() > 0) {
         m_onsetTime += m_timeStep;
-        if (m_onsetTime >= curPronounciation->duration[m_curVowelIdx] && curPronounciation->duration[m_curVowelIdx] > 0) {
+        if (m_onsetTime >= m_curSequence[m_preIdx].duration[m_curVowelIdx] && m_curSequence[m_preIdx].duration[m_curVowelIdx] > 0) {
             m_curVowelIdx++;
         }
-        return curPronounciation->params[m_curVowelIdx];
+        return m_curSequence[m_preIdx].params[m_curVowelIdx];
     } else {
         return 0;
     }

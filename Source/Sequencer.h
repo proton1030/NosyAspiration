@@ -36,7 +36,7 @@ private:
     unordered_map<string, pronunciation> m_pronunciationLookUp;
     vector<pronunciation> m_curSequence;
     vector<string> m_availablePronunciations;
-    pronunciation* curPronounciation;
+    int m_preIdx;
     int m_curPronunceationIdx;
     int m_curVowelIdx;
     float m_onsetTime;
