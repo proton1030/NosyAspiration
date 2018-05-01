@@ -55,6 +55,7 @@ struct DragableTargetList  : public ListBoxModel
     
     var getDragSourceDescription (const SparseSet<int>& selectedRows) override
     {
+        activeRowNum = selectedRows[0];
         return String(wordList[selectedRows[0]]);
     }
     

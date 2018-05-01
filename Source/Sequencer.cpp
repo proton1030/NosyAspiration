@@ -9,12 +9,12 @@
 */
 
 #include "Sequencer.h"
-Sequencer::Sequencer(float sampleRate, float blockLength):
+Sequencer::Sequencer():
 m_preIdx(0),
 m_curPronunceationIdx(0),
 m_curVowelIdx(0),
-m_sampleRate(sampleRate),
-m_blockLength(blockLength)
+m_sampleRate(0),
+m_blockLength(0)
 {
     
 }
@@ -30,7 +30,9 @@ Sequencer::~Sequencer()
 }
 
 //adding in prounciation params
-void Sequencer::init() {
+void Sequencer::init(float sampleRate, float blockLength) {
+    m_sampleRate = sampleRate;
+    m_blockLength = blockLength;
     m_timeStep = m_blockLength/m_sampleRate * 1000;
     
     float ya_params[2][Tract::k_num_tract_params] =
@@ -58,6 +60,12 @@ void Sequencer::init() {
     float ri_duration[2] = {100.0f, -1};
     addPronunciation("ri", 2, ri_duration, ri_params);
 }
+
+void Sequencer::reset() {
+    m_pronunciationLookUp.clear();
+    m_availablePronunciations.clear();
+}
+
 // make it easy to add hardcoded pronunciations
 void Sequencer::addPronunciation(string name, int numOfVowels, float *durationInMs, float params[][Tract::k_num_tract_params]) {
     pronunciation newProunciation;

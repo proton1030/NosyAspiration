@@ -17,9 +17,10 @@ using namespace std;
 class Sequencer
 {
 public:
-    Sequencer(float sampleRate, float blockLength);
+    Sequencer();
     ~Sequencer();
-    void init();
+    void init(float sampleRate, float blockLength);
+    void reset();
     void insert(string pronunciation, int pos);
     void Add(string pronunciation);
     void deleteNote(int pos);
