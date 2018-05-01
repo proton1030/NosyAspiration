@@ -9,7 +9,6 @@
 */
 
 #include "Sequencer.h"
-#include <iostream>
 Sequencer::Sequencer(float sampleRate, float blockLength):
 m_preIdx(0),
 m_curPronunceationIdx(0),
@@ -85,7 +84,7 @@ float* Sequencer::incPronunceAndGetVowel() {
         m_curPronunceationIdx = (m_curPronunceationIdx + 1) % m_curSequence.size();
         m_curVowelIdx = 0;
         m_onsetTime = 0;
-        std::cout << m_curSequence[m_preIdx].name << std::endl;
+//        std::cout << m_curSequence[m_preIdx].name << std::endl;
         return m_curSequence[m_preIdx].params[0];
     } else {
         return 0;
@@ -108,7 +107,7 @@ float* Sequencer::incVowelAndGetVowel() {
 void Sequencer::Add(string pronouciation) {
     m_curSequence.push_back(m_pronunciationLookUp[pronouciation]);
     m_curPronunceationIdx = 0;
-    std::cout << m_curSequence.size() << std::endl;
+//    std::cout << m_curSequence.size() << std::endl;
 }
 
 // pos is zero based

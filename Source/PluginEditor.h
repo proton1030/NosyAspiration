@@ -21,7 +21,6 @@
 /**
 */
 class NosyAspirationAudioProcessorEditor  : public AudioProcessorEditor,
-                                            public Slider::Listener,
                                             public DragAndDropContainer
 {
 public:
@@ -32,7 +31,6 @@ public:
     void paint (Graphics&) override;
     void resized() override;
     
-    void sliderValueChanged (Slider* sliderThatWasMoved) override;
     static const Font& getFont();
     
 private:

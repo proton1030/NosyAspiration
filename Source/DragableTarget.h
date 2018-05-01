@@ -13,7 +13,6 @@
 #include "WordListItem.h"
 #include "DragableTargetList.h"
 #include "Sequencer.h"
-#include <iostream>
 
 
 class DragableTarget  : public Component, public DragAndDropTarget
@@ -35,7 +34,6 @@ public:
     
     void paint (Graphics& g) override
     {
-//        g.fillAll(Colours::red);
         if (somethingIsBeingDraggedOver)
         {
             g.setColour (Colours::hotpink);
@@ -99,10 +97,6 @@ public:
     
     void itemDropped (const SourceDetails& dragSourceDetails) override
     {
-//        message = "Items dropped: " + dragSourceDetails.description.toString();
-        //        m_iActiveWords ++;
-//        activeWords.add(new WordListItem());
-
         if (dragSourceDetails.sourceComponent.get() == listSourceM)
         {
             String name = dragSourceDetails.description.toString();

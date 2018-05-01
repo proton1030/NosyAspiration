@@ -11,7 +11,6 @@
 #pragma once
 
 #include "WaveformGen.h"
-#include <iostream>
 
 class Glottis
 {
