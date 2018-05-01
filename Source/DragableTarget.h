@@ -35,7 +35,7 @@ public:
     
     void paint (Graphics& g) override
     {
-        g.fillAll(Colours::red);
+//        g.fillAll(Colours::red);
         if (somethingIsBeingDraggedOver)
         {
             g.setColour (Colours::hotpink);
@@ -59,10 +59,11 @@ public:
         return rows.joinIntoString (", ");
     }
     
-    void getTargetModel(DragableTargetList &model, ListBox &listB, Sequencer &seq)
+    void getTargetModel(DragableTargetList &model, ListBox &listB, ListBox &listSource, Sequencer &seq)
     {
         targetM = &model;
         listM = &listB;
+        listSourceM = &listSource;
         seqM = &seq;
     }
     
@@ -98,16 +99,21 @@ public:
     
     void itemDropped (const SourceDetails& dragSourceDetails) override
     {
-        message = "Items dropped: " + dragSourceDetails.description.toString();
+//        message = "Items dropped: " + dragSourceDetails.description.toString();
         //        m_iActiveWords ++;
 //        activeWords.add(new WordListItem());
 
-       
-        String name = dragSourceDetails.description.toString();
-        std::cout << name.toStdString() << std::endl;
-        seqM->Add(name.toStdString());
-        targetM->numRows++;
-        targetM->wordList.push_back(name.toStdString());
+        if (dragSourceDetails.sourceComponent.get() == listSourceM)
+        {
+            String name = dragSourceDetails.description.toString();
+            seqM->Add(name.toStdString());
+            targetM->wordList.push_back(name.toStdString());
+        }
+        else
+        {
+            targetM->wordList.erase(targetM->wordList.begin() + targetM->activeRowNum);
+            seqM->deleteNote(targetM->activeRowNum);
+        }
         listM->updateContent();
         listM->repaint();
         somethingIsBeingDraggedOver = false;
@@ -121,6 +127,7 @@ private:
     
     DragableTargetList*     targetM = 0;
     ListBox*                listM = 0;
+    ListBox*                listSourceM = 0;
     Sequencer*              seqM = 0;
 };
 

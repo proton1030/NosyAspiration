@@ -73,4 +73,5 @@ struct DragableSource  : public ListBoxModel
     }
     
     vector<string> wordsLib;
+    
 };

@@ -18,7 +18,7 @@ struct DragableTargetList  : public ListBoxModel
     // telling the listbox how many rows there are, painting them, etc.
     int getNumRows() override
     {
-        return numRows;
+        return int(wordList.size());
     }
     
     void paintListBoxItem (int rowNumber, Graphics& g,
@@ -48,9 +48,8 @@ struct DragableTargetList  : public ListBoxModel
         
         for (int i = 0; i < selectedRows.size(); ++i)
             rows.add (String (selectedRows[i] + 1));
-        
-        
-        numRows++;
+        activeRowNum = selectedRows[0];
+//        wordList.erase(wordList.begin() + selectedRows[0]);
         return rows.joinIntoString (", ");
     }
     
@@ -60,7 +59,6 @@ struct DragableTargetList  : public ListBoxModel
         return wacky;
     }
     
-    int numRows = 0;
     vector<string> wordList;
-    
+    int activeRowNum = 0;
 };

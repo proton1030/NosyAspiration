@@ -44,9 +44,10 @@ private:
     DragableSource sourceModel;
     DragableTargetList targetModel;
     DragableTarget target;
+    ScopedPointer<Slider> knobGain, knobVibrato;
     
     
-    ScopedPointer<Slider> sliderFreq, sliderTonguePos, sliderTongueDiam, sliderTongueTipPos, sliderTongueTipDiam;
-    ScopedPointer<Label> lSliderFreq, lSliderTonguePos, lSliderTongueDiam, lSliderTongueTipPos, lSliderTongueTipDiam;
+//    ScopedPointer<Slider> sliderFreq, sliderTonguePos, sliderTongueDiam, sliderTongueTipPos, sliderTongueTipDiam;
+//    ScopedPointer<Label> lSliderFreq, lSliderTonguePos, lSliderTongueDiam, lSliderTongueTipPos, lSliderTongueTipDiam;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NosyAspirationAudioProcessorEditor)
 };

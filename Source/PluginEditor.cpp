@@ -26,17 +26,30 @@ NosyAspirationAudioProcessorEditor::NosyAspirationAudioProcessorEditor (NosyAspi
     sourceListBox.setOpaque(true);
     sourceListBox.setColour(ListBox::ColourIds::backgroundColourId , Colour::fromFloatRGBA (1.0f, 0.0f, 0.0f, 0.0f));
     sourceListBox.getViewport()->setScrollBarsShown(false, false, true, true);
-    
-//    targetModel.numRows = 1;
+
     targetListBox.setModel (&targetModel);
-    targetListBox.setRowHeight(40);
+    targetListBox.setRowHeight(90);
     targetListBox.setOpaque(true);
     targetListBox.setColour(ListBox::ColourIds::backgroundColourId , Colour::fromFloatRGBA (1.0f, 0.0f, 0.0f, 0.0f));
+    targetListBox.getViewport()->setScrollBarsShown(false, false, true, true);
     
     addAndMakeVisible (sourceListBox);
     addAndMakeVisible (targetListBox);
     addAndMakeVisible (target);
-    target.getTargetModel(targetModel, targetListBox, *processor.m_CSequencer);
+    target.getTargetModel(targetModel, targetListBox, sourceListBox, *processor.m_CSequencer);
+    
+    addAndMakeVisible (knobGain = new Slider ("gain"));
+    knobGain->setRange (0, 1, 0.01);
+    knobGain->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
+    knobGain->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
+    knobGain->addListener (this);
+    
+    addAndMakeVisible (knobVibrato = new Slider ("vibrato"));
+    knobVibrato->setRange (0, 8, 0.01);
+    knobVibrato->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
+    knobVibrato->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
+    knobVibrato->addListener (this);
+    
     
     
     
@@ -116,16 +129,16 @@ NosyAspirationAudioProcessorEditor::NosyAspirationAudioProcessorEditor (NosyAspi
 
 NosyAspirationAudioProcessorEditor::~NosyAspirationAudioProcessorEditor()
 {
-    sliderFreq = nullptr;
-    sliderTonguePos = nullptr;
-    sliderTongueDiam = nullptr;
-    sliderTongueTipPos = nullptr;
-    sliderTongueTipDiam = nullptr;
-    lSliderFreq = nullptr;
-    lSliderTonguePos = nullptr;
-    lSliderTongueDiam = nullptr;
-    lSliderTongueTipPos = nullptr;
-    lSliderTongueTipDiam = nullptr;
+//    sliderFreq = nullptr;
+//    sliderTonguePos = nullptr;
+//    sliderTongueDiam = nullptr;
+//    sliderTongueTipPos = nullptr;
+//    sliderTongueTipDiam = nullptr;
+//    lSliderFreq = nullptr;
+//    lSliderTonguePos = nullptr;
+//    lSliderTongueDiam = nullptr;
+//    lSliderTongueTipPos = nullptr;
+//    lSliderTongueTipDiam = nullptr;
 }
 
 //==============================================================================
@@ -159,33 +172,35 @@ void NosyAspirationAudioProcessorEditor::resized()
 //    sliderTongueTipDiam->setBounds (proportionOfWidth (0.23f), proportionOfHeight (0.7000f), proportionOfWidth (0.720f), proportionOfHeight (0.1000f));
     auto r = getLocalBounds().reduced (8);
     sourceListBox.setBounds (630, 190, 130, 380);
-    targetListBox.setBounds(30, 180, 550, 120);
-    target      .setBounds (30, 480, 550, 120);
+    targetListBox.setBounds(50, 190, 130, 380);
+    target.setBounds (300, 180, 200, 200);
+    knobGain->setBounds (230, 420, 120, 120);
+    knobVibrato->setBounds (450, 420, 120, 120);
 //    target.getViewport()->setTransform(AffineTransform::rotation(3.2));
 }
 
 void NosyAspirationAudioProcessorEditor::sliderValueChanged (Slider* sliderThatWasMoved)
 {
-    if (sliderThatWasMoved == sliderFreq)
-    {
-        processor.m_CGlottis->setParam(Glottis::k_frequency, sliderThatWasMoved->getValue());
-    }
-    else if (sliderThatWasMoved == sliderTonguePos)
-    {
-        processor.m_CTract->setParam(Tract::k_tongueBaseIndex, sliderThatWasMoved->getValue());
-    }
-    else if (sliderThatWasMoved == sliderTongueDiam)
-    {
-        processor.m_CTract->setParam(Tract::k_tongueBaseDiameter, sliderThatWasMoved->getValue());
-    }
-    else if (sliderThatWasMoved == sliderTongueTipPos)
-    {
-        processor.m_CTract->setParam(Tract::k_tongueTipIndex, sliderThatWasMoved->getValue());
-    }
-    else if (sliderThatWasMoved == sliderTongueTipDiam)
-    {
-        processor.m_CTract->setParam(Tract::k_tongueTipDiameter, sliderThatWasMoved->getValue());
-    }
+//    if (sliderThatWasMoved == sliderFreq)
+//    {
+//        processor.m_CGlottis->setParam(Glottis::k_frequency, sliderThatWasMoved->getValue());
+//    }
+//    else if (sliderThatWasMoved == sliderTonguePos)
+//    {
+//        processor.m_CTract->setParam(Tract::k_tongueBaseIndex, sliderThatWasMoved->getValue());
+//    }
+//    else if (sliderThatWasMoved == sliderTongueDiam)
+//    {
+//        processor.m_CTract->setParam(Tract::k_tongueBaseDiameter, sliderThatWasMoved->getValue());
+//    }
+//    else if (sliderThatWasMoved == sliderTongueTipPos)
+//    {
+//        processor.m_CTract->setParam(Tract::k_tongueTipIndex, sliderThatWasMoved->getValue());
+//    }
+//    else if (sliderThatWasMoved == sliderTongueTipDiam)
+//    {
+//        processor.m_CTract->setParam(Tract::k_tongueTipDiameter, sliderThatWasMoved->getValue());
+//    }
 }
 
 const Font& NosyAspirationAudioProcessorEditor::getFont()
