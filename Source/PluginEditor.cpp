@@ -11,14 +11,12 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-
 //==============================================================================
 NosyAspirationAudioProcessorEditor::NosyAspirationAudioProcessorEditor (NosyAspirationAudioProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    
     sourceModel.getWordsInfo(processor.m_CSequencer->getAvailablePronunciations());
     targetModel.getCurrentSequence(processor.m_CSequencer->getCurrentPronunciations());
     

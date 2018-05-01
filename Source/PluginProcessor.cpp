@@ -11,7 +11,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-
 //==============================================================================
 NosyAspirationAudioProcessor::NosyAspirationAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -106,6 +105,7 @@ void NosyAspirationAudioProcessor::prepareToPlay (double sampleRate, int samples
     m_CPitchTrak->init(samplesPerBlock, sampleRate);
     m_COnsetDetection = new OnsetDetection();
     m_COnsetDetection->init(samplesPerBlock, sampleRate);
+     m_CSequencer->reset();
     m_CSequencer->init(sampleRate, samplesPerBlock);
     m_CReverb = new juce::Reverb();
     m_CReverb->setSampleRate(sampleRate);
@@ -118,7 +118,6 @@ void NosyAspirationAudioProcessor::releaseResources()
     m_CPitchTrak->~PitchTrack();
     m_CGlottis->~Glottis();
     m_CTract->~Tract();
-    m_CSequencer->reset();
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
