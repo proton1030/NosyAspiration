@@ -13,6 +13,7 @@
               pluginAAXCategory="2" jucerVersion="5.3.1" pluginFormats="buildVST,buildAU,buildStandalone">
   <MAINGROUP id="isGQd8" name="NosyAspiration">
     <GROUP id="{05C8520D-07ED-5269-2489-E7978BC9BAB8}" name="Assets">
+      <FILE id="PkXxix" name="Chalkduster.ttf" compile="0" resource="1" file="/Library/Fonts/Chalkduster.ttf"/>
       <FILE id="GeEm5t" name="background.jpg" compile="0" resource="1" file="Assets/background.jpg"/>
       <FILE id="pCdQdX" name="omnes-semibold-webfont.ttf" compile="0" resource="1"
             file="Assets/omnes-semibold-webfont.ttf"/>

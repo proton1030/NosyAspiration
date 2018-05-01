@@ -43,12 +43,18 @@ NosyAspirationAudioProcessorEditor::NosyAspirationAudioProcessorEditor (NosyAspi
     knobGain->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
     knobGain->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     knobGain->addListener (this);
+    knobGain->setColour(Slider::ColourIds::thumbColourId, Colours::lightpink);
+    knobGain->setColour(Slider::ColourIds::trackColourId, Colours::white);
+    knobGain->setColour(Slider::ColourIds::rotarySliderFillColourId, Colours::lightgrey);
     
     addAndMakeVisible (knobVibrato = new Slider ("vibrato"));
     knobVibrato->setRange (0, 8, 0.01);
     knobVibrato->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
     knobVibrato->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     knobVibrato->addListener (this);
+    knobVibrato->setColour(Slider::ColourIds::thumbColourId, Colours::lightpink);
+    knobVibrato->setColour(Slider::ColourIds::trackColourId, Colours::white);
+    knobVibrato->setColour(Slider::ColourIds::rotarySliderFillColourId, Colours::lightgrey);
     
     
     
@@ -172,10 +178,10 @@ void NosyAspirationAudioProcessorEditor::resized()
 //    sliderTongueTipDiam->setBounds (proportionOfWidth (0.23f), proportionOfHeight (0.7000f), proportionOfWidth (0.720f), proportionOfHeight (0.1000f));
     auto r = getLocalBounds().reduced (8);
     sourceListBox.setBounds (630, 190, 130, 380);
-    targetListBox.setBounds(50, 190, 130, 380);
+    targetListBox.setBounds(40, 190, 130, 380);
     target.setBounds (300, 180, 200, 200);
-    knobGain->setBounds (230, 420, 120, 120);
-    knobVibrato->setBounds (450, 420, 120, 120);
+    knobGain->setBounds (230, 400, 120, 120);
+    knobVibrato->setBounds (450, 400, 120, 120);
 //    target.getViewport()->setTransform(AffineTransform::rotation(3.2));
 }
 

@@ -27,7 +27,7 @@ struct DragableTargetList  : public ListBoxModel
         g.setColour(Colour::fromFloatRGBA (1.0f, 0.0f, 0.0f, 0.0f));
         g.setFont(getFont());
         g.setFont (24);
-        g.setColour (Colour::fromRGB(176, 59, 82));
+        g.setColour (Colours::lightgrey);
         g.drawRoundedRectangle(8, 8, width-16, height-16, 5.0, 3.0);
         g.setColour (Colours::lightgrey);
         g.drawText (wordList[rowNumber],
@@ -55,7 +55,7 @@ struct DragableTargetList  : public ListBoxModel
     
     const Font& getFont()
     {
-        static Font wacky (Font (Typeface::createSystemTypefaceFor (BinaryData::omnessemiboldwebfont_ttf, BinaryData::omnessemiboldwebfont_ttfSize)));
+        static Font wacky (Font (Typeface::createSystemTypefaceFor (BinaryData::Chalkduster_ttf, BinaryData::Chalkduster_ttfSize)));
         return wacky;
     }
     

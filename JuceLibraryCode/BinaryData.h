@@ -8,14 +8,17 @@
 
 namespace BinaryData
 {
+    extern const char*   Chalkduster_ttf;
+    const int            Chalkduster_ttfSize = 486860;
+
     extern const char*   background_jpg;
-    const int            background_jpgSize = 175666;
+    const int            background_jpgSize = 220361;
 
     extern const char*   omnessemiboldwebfont_ttf;
     const int            omnessemiboldwebfont_ttfSize = 55832;
 
     // Number of elements in the namedResourceList and originalFileNames arrays.
-    const int namedResourceListSize = 2;
+    const int namedResourceListSize = 3;
 
     // Points to the start of a list of resource names.
     extern const char* namedResourceList[];

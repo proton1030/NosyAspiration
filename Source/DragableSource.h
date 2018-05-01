@@ -68,7 +68,7 @@ struct DragableSource  : public ListBoxModel
     
     const Font& getFont()
     {
-        static Font wacky (Font (Typeface::createSystemTypefaceFor (BinaryData::omnessemiboldwebfont_ttf, BinaryData::omnessemiboldwebfont_ttfSize)));
+        static Font wacky (Font (Typeface::createSystemTypefaceFor (BinaryData::Chalkduster_ttf, BinaryData::Chalkduster_ttfSize)));
         return wacky;
     }
     
