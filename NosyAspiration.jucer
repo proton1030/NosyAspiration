@@ -12,44 +12,56 @@
               pluginAUExportPrefix="NosyAspirationAU" aaxIdentifier="com.yourcompany.NosyAspiration"
               pluginAAXCategory="2" jucerVersion="5.3.1" pluginFormats="buildVST,buildAU,buildStandalone">
   <MAINGROUP id="isGQd8" name="NosyAspiration">
-    <GROUP id="{4B7812F4-78FF-E9E3-01E4-5E769371612B}" name="OnsetDetection">
-      <FILE id="pu0LhW" name="OnsetDetection.cpp" compile="1" resource="0"
-            file="Source/OnsetDetection.cpp"/>
-      <FILE id="f7JQPd" name="OnsetDetection.h" compile="0" resource="0"
-            file="Source/OnsetDetection.h"/>
-    </GROUP>
-    <GROUP id="{CCB0892E-8465-C696-4CD4-99F152C9EA95}" name="PitchTrack">
-      <FILE id="q0ybrL" name="PitchTrack.cpp" compile="1" resource="0" file="Source/PitchTrack.cpp"/>
-      <FILE id="P0VXM2" name="PitchTrack.h" compile="0" resource="0" file="Source/PitchTrack.h"/>
-    </GROUP>
-    <GROUP id="{B77C10AB-27D4-CE46-1DE9-A9FC4BF166DD}" name="Tract">
-      <FILE id="blX2rO" name="Tract.cpp" compile="1" resource="0" file="Source/Tract.cpp"/>
-      <FILE id="WP3401" name="Tract.h" compile="0" resource="0" file="Source/Tract.h"/>
-    </GROUP>
-    <GROUP id="{2F70E78F-1601-01F1-6E45-39FADE0A1E94}" name="AudioFileIO">
-      <FILE id="ESyMYf" name="AudioFile.cpp" compile="1" resource="0" file="Source/AudioFile.cpp"/>
-      <FILE id="U6czLb" name="AudioFile.h" compile="0" resource="0" file="Source/AudioFile.h"/>
-      <FILE id="F8X9VI" name="AudioFileIf.cpp" compile="1" resource="0" file="Source/AudioFileIf.cpp"/>
-      <FILE id="OSFN8w" name="AudioFileIf.h" compile="0" resource="0" file="Source/AudioFileIf.h"/>
-      <FILE id="p4tPj5" name="ErrorDef.h" compile="0" resource="0" file="Source/ErrorDef.h"/>
-      <FILE id="NFtleC" name="Util.h" compile="0" resource="0" file="Source/Util.h"/>
-      <FILE id="w0xpR3" name="Vector.h" compile="0" resource="0" file="Source/Vector.h"/>
-    </GROUP>
-    <GROUP id="{0006FD61-5ECC-F6B2-CE1D-F8DC5D83B90A}" name="Test">
-      <FILE id="Ov2PQs" name="WavFileTest.cpp" compile="1" resource="0" file="Source/WavFileTest.cpp"/>
-    </GROUP>
-    <GROUP id="{873DEECD-B201-B1CF-35F5-D089D3468941}" name="SimplexNoise">
-      <FILE id="IepJLb" name="SimplexNoise.cpp" compile="1" resource="0"
-            file="Source/SimplexNoise.cpp"/>
-      <FILE id="Rib0Wg" name="SimplexNoise.h" compile="0" resource="0" file="Source/SimplexNoise.h"/>
-    </GROUP>
-    <GROUP id="{10928688-1544-CB03-13B9-888BFF48D2EE}" name="Glottis">
-      <FILE id="PZHDHo" name="Glottis.cpp" compile="1" resource="0" file="Source/Glottis.cpp"/>
-      <FILE id="Xp0aSW" name="Glottis.h" compile="0" resource="0" file="Source/Glottis.h"/>
-      <FILE id="dF7aY3" name="WaveformGen.cpp" compile="1" resource="0" file="Source/WaveformGen.cpp"/>
-      <FILE id="Y7oXg0" name="WaveformGen.h" compile="0" resource="0" file="Source/WaveformGen.h"/>
+    <GROUP id="{05C8520D-07ED-5269-2489-E7978BC9BAB8}" name="Assets">
+      <FILE id="GeEm5t" name="background.jpg" compile="0" resource="1" file="Assets/background.jpg"/>
+      <FILE id="pCdQdX" name="omnes-semibold-webfont.ttf" compile="0" resource="1"
+            file="Assets/omnes-semibold-webfont.ttf"/>
     </GROUP>
     <GROUP id="{BA961BA5-35EA-60B5-18E2-2140209EAF20}" name="Source">
+      <GROUP id="{0A73A1EF-4A25-9E97-BDFE-6C76DB199BE1}" name="GUIComponents">
+        <FILE id="kxxo31" name="DragableSource.h" compile="0" resource="0"
+              file="Source/DragableSource.h"/>
+        <FILE id="bnXndE" name="DragableTarget.h" compile="0" resource="0"
+              file="Source/DragableTarget.h"/>
+        <FILE id="OSorUI" name="WordListItem.h" compile="0" resource="0" file="Source/WordListItem.h"/>
+      </GROUP>
+      <GROUP id="{4B7812F4-78FF-E9E3-01E4-5E769371612B}" name="OnsetDetection">
+        <FILE id="pu0LhW" name="OnsetDetection.cpp" compile="1" resource="0"
+              file="Source/OnsetDetection.cpp"/>
+        <FILE id="f7JQPd" name="OnsetDetection.h" compile="0" resource="0"
+              file="Source/OnsetDetection.h"/>
+      </GROUP>
+      <GROUP id="{CCB0892E-8465-C696-4CD4-99F152C9EA95}" name="PitchTrack">
+        <FILE id="q0ybrL" name="PitchTrack.cpp" compile="1" resource="0" file="Source/PitchTrack.cpp"/>
+        <FILE id="P0VXM2" name="PitchTrack.h" compile="0" resource="0" file="Source/PitchTrack.h"/>
+      </GROUP>
+      <GROUP id="{B77C10AB-27D4-CE46-1DE9-A9FC4BF166DD}" name="Tract">
+        <FILE id="blX2rO" name="Tract.cpp" compile="1" resource="0" file="Source/Tract.cpp"/>
+        <FILE id="WP3401" name="Tract.h" compile="0" resource="0" file="Source/Tract.h"/>
+      </GROUP>
+      <GROUP id="{2F70E78F-1601-01F1-6E45-39FADE0A1E94}" name="AudioFileIO">
+        <FILE id="ESyMYf" name="AudioFile.cpp" compile="1" resource="0" file="Source/AudioFile.cpp"/>
+        <FILE id="U6czLb" name="AudioFile.h" compile="0" resource="0" file="Source/AudioFile.h"/>
+        <FILE id="F8X9VI" name="AudioFileIf.cpp" compile="1" resource="0" file="Source/AudioFileIf.cpp"/>
+        <FILE id="OSFN8w" name="AudioFileIf.h" compile="0" resource="0" file="Source/AudioFileIf.h"/>
+        <FILE id="p4tPj5" name="ErrorDef.h" compile="0" resource="0" file="Source/ErrorDef.h"/>
+        <FILE id="NFtleC" name="Util.h" compile="0" resource="0" file="Source/Util.h"/>
+        <FILE id="w0xpR3" name="Vector.h" compile="0" resource="0" file="Source/Vector.h"/>
+      </GROUP>
+      <GROUP id="{0006FD61-5ECC-F6B2-CE1D-F8DC5D83B90A}" name="Test">
+        <FILE id="Ov2PQs" name="WavFileTest.cpp" compile="1" resource="0" file="Source/WavFileTest.cpp"/>
+      </GROUP>
+      <GROUP id="{873DEECD-B201-B1CF-35F5-D089D3468941}" name="SimplexNoise">
+        <FILE id="IepJLb" name="SimplexNoise.cpp" compile="1" resource="0"
+              file="Source/SimplexNoise.cpp"/>
+        <FILE id="Rib0Wg" name="SimplexNoise.h" compile="0" resource="0" file="Source/SimplexNoise.h"/>
+      </GROUP>
+      <GROUP id="{10928688-1544-CB03-13B9-888BFF48D2EE}" name="Glottis">
+        <FILE id="PZHDHo" name="Glottis.cpp" compile="1" resource="0" file="Source/Glottis.cpp"/>
+        <FILE id="Xp0aSW" name="Glottis.h" compile="0" resource="0" file="Source/Glottis.h"/>
+        <FILE id="dF7aY3" name="WaveformGen.cpp" compile="1" resource="0" file="Source/WaveformGen.cpp"/>
+        <FILE id="Y7oXg0" name="WaveformGen.h" compile="0" resource="0" file="Source/WaveformGen.h"/>
+      </GROUP>
       <FILE id="HZ1r7i" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="sYnUWG" name="PluginProcessor.h" compile="0" resource="0"
@@ -74,7 +86,6 @@
         <MODULEPATH id="juce_data_structures" path="../modules"/>
         <MODULEPATH id="juce_gui_basics" path="../modules"/>
         <MODULEPATH id="juce_gui_extra" path="../modules"/>
-        <MODULEPATH id="juce_cryptography" path="../modules"/>
         <MODULEPATH id="juce_audio_basics" path="../modules"/>
         <MODULEPATH id="juce_audio_devices" path="../modules"/>
         <MODULEPATH id="juce_audio_formats" path="../modules"/>
@@ -94,7 +105,6 @@
     <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="1" useGlobalPath="1"/>
     <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_cryptography" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_dsp" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>

@@ -150,21 +150,26 @@ void NosyAspirationAudioProcessor::processBlock (AudioSampleBuffer& buffer, Midi
 
     for (int i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
+    
+    
 
-    auto inputBuff = buffer.getReadPointer(0);
-    float rms = buffer.getRMSLevel(0, 0, blockSize);
-    float f0 = m_CPitchTrak->getFundamentalFreq((float*)inputBuff);
-    std::cout << rms << std::endl;
-    m_CGlottis->setParam(Glottis::k_frequency, f0);
-    float* outputBuff = buffer.getWritePointer (0);
-    m_CGlottis->process(outputBuff, outputBuff, buffer.getNumSamples());
-    m_CTract->process(outputBuff, outputBuff, buffer.getNumSamples());
-    for (int channel = 1; channel < totalNumInputChannels; channel++) {
-        float* other_channel_data = buffer.getWritePointer(channel);
-        memcpy(other_channel_data, outputBuff, sizeof(float) * buffer.getNumSamples());
-    }
-    buffer.applyGain(0, 0, blockSize, rms * 6);
-    buffer.applyGain(1, 0, blockSize, rms * 6);
+//    auto inputBuff = buffer.getReadPointer(0);
+//    float rms = buffer.getRMSLevel(0, 0, blockSize);
+//
+//    float f0 = m_CPitchTrak->getFundamentalFreq((float*)inputBuff);
+//    std::cout << rms << std::endl;
+//    m_CGlottis->setParam(Glottis::k_frequency, f0);
+//    float* outputBuff = buffer.getWritePointer (0);
+//    m_CGlottis->process(outputBuff, outputBuff, buffer.getNumSamples());
+//    m_CTract->process(outputBuff, outputBuff, buffer.getNumSamples());
+//    for (int channel = 1; channel < totalNumInputChannels; channel++) {
+//        float* other_channel_data = buffer.getWritePointer(channel);
+//        memcpy(other_channel_data, outputBuff, sizeof(float) * buffer.getNumSamples());
+//    }
+//    buffer.applyGain(0, 0, blockSize, rms * 8);
+//    buffer.applyGain(1, 0, blockSize, rms * 8);
+    
+    
 }
 
 //==============================================================================
