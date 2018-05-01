@@ -9,6 +9,8 @@
 */
 
 #pragma once
+#include <vector>
+#include <string>
 
 struct DragableTargetList  : public ListBoxModel
 {
@@ -28,7 +30,7 @@ struct DragableTargetList  : public ListBoxModel
         g.setColour (Colour::fromRGB(176, 59, 82));
         g.drawRoundedRectangle(8, 8, width-16, height-16, 5.0, 3.0);
         g.setColour (Colours::lightgrey);
-        g.drawText ("Thing #" + String (rowNumber + 1),
+        g.drawText (wordList[rowNumber],
                     0, 0, width, height,
                     Justification::centred, true);
         
@@ -47,6 +49,7 @@ struct DragableTargetList  : public ListBoxModel
         for (int i = 0; i < selectedRows.size(); ++i)
             rows.add (String (selectedRows[i] + 1));
         
+        
         numRows++;
         return rows.joinIntoString (", ");
     }
@@ -58,5 +61,6 @@ struct DragableTargetList  : public ListBoxModel
     }
     
     int numRows = 0;
+    vector<string> wordList;
     
 };

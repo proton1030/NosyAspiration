@@ -40,7 +40,6 @@ NosyAspirationAudioProcessorEditor::NosyAspirationAudioProcessorEditor (NosyAspi
     
     
     
-    
 //    addAndMakeVisible (sliderFreq = new Slider ("Frequency"));
 //    sliderFreq->setRange (40, 600, 0.01);
 //    sliderFreq->setSliderStyle (Slider::LinearHorizontal);

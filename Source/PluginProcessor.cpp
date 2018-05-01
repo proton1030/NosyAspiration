@@ -25,7 +25,7 @@ NosyAspirationAudioProcessor::NosyAspirationAudioProcessor()
                        )
 #endif
 {
-    
+//    audioDeviceManager.closeAudioDevice ();
 }
 
 NosyAspirationAudioProcessor::~NosyAspirationAudioProcessor()

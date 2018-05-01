@@ -101,13 +101,15 @@ public:
         message = "Items dropped: " + dragSourceDetails.description.toString();
         //        m_iActiveWords ++;
 //        activeWords.add(new WordListItem());
-        targetM->numRows++;
-        listM->updateContent();
+
+       
         String name = dragSourceDetails.description.toString();
         std::cout << name.toStdString() << std::endl;
         seqM->Add(name.toStdString());
-        
-//        listM->repaint();
+        targetM->numRows++;
+        targetM->wordList.push_back(name.toStdString());
+        listM->updateContent();
+        listM->repaint();
         somethingIsBeingDraggedOver = false;
         repaint();
     }
