@@ -13,6 +13,7 @@
 #include "Sequencer.h"
 #include <vector>
 #include <string>
+#include <iostream>
 
 
 struct DragableSource  : public ListBoxModel
@@ -47,13 +48,16 @@ struct DragableSource  : public ListBoxModel
     
     var getDragSourceDescription (const SparseSet<int>& selectedRows) override
     {
-        String rows;
-
-        for (int i = 0; i < selectedRows.size(); ++i)
-            rows = wordsLib[i];
+//        String rows;
+//
+//        for (int i = 0; i < selectedRows.size(); ++i)
+//        {
+//            std::cout << selectedRows.size() << std::endl;
+//            rows = wordsLib[i];
+//        }
+//        std::cout << selectedRows[0];
         
-        
-        return rows;
+        return String(wordsLib[selectedRows[0]]);
     }
     
     void getWordsInfo(vector<string> words)

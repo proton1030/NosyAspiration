@@ -105,7 +105,7 @@ public:
         listM->updateContent();
         String name = dragSourceDetails.description.toString();
         std::cout << name.toStdString() << std::endl;
-//        seqM->Add(name.toStdString());
+        seqM->Add(name.toStdString());
         
 //        listM->repaint();
         somethingIsBeingDraggedOver = false;

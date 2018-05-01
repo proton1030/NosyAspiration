@@ -59,9 +59,9 @@ void Sequencer::init() {
     float ri_duration[2] = {1000.0f, -1};
     addPronunciation("ri", 2, ri_duration, ri_params);
     
-    Add("ya");
-    Add("ei");
-    Add("ri");
+//    Add("ya");
+//    Add("ei");
+//    Add("ri");
 }
 // make it easy to add hardcoded pronunciations
 void Sequencer::addPronunciation(string name, int numOfVowels, float *durationInMs, float params[][Tract::k_num_tract_params]) {
