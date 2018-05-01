@@ -42,6 +42,7 @@ NosyAspirationAudioProcessorEditor::NosyAspirationAudioProcessorEditor (NosyAspi
     knobGain->setRange (0, 1, 0.02);
     knobGain->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
     knobGain->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
+    knobGain->setValue(processor.m_gain);
     
     knobGain->setColour(Slider::ColourIds::thumbColourId, Colours::lightpink);
     knobGain->setColour(Slider::ColourIds::trackColourId, Colours::white);
@@ -54,6 +55,11 @@ NosyAspirationAudioProcessorEditor::NosyAspirationAudioProcessorEditor (NosyAspi
     knobVibrato->setRange (0, 8, 0.1);
     knobVibrato->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
     knobVibrato->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
+    knobVibrato->setValue(processor.m_CGlottis->getParam(Glottis::k_vibrato_freq));
+    
+    knobVibrato->setColour(Slider::ColourIds::thumbColourId, Colours::lightpink);
+    knobVibrato->setColour(Slider::ColourIds::trackColourId, Colours::white);
+    knobVibrato->setColour(Slider::ColourIds::rotarySliderFillColourId, Colours::lightgrey);
     knobVibrato->onValueChange = [this] {
         processor.m_CGlottis->setParam(Glottis::k_vibrato_freq, knobVibrato->getValue());
     };
