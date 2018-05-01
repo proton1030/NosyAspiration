@@ -18,6 +18,19 @@
             file="Assets/omnes-semibold-webfont.ttf"/>
     </GROUP>
     <GROUP id="{BA961BA5-35EA-60B5-18E2-2140209EAF20}" name="Source">
+      <GROUP id="{15B78884-0C81-01B3-9133-5A8DEB2D02F3}" name="JuceTemplate">
+        <FILE id="HZ1r7i" name="PluginProcessor.cpp" compile="1" resource="0"
+              file="Source/PluginProcessor.cpp"/>
+        <FILE id="sYnUWG" name="PluginProcessor.h" compile="0" resource="0"
+              file="Source/PluginProcessor.h"/>
+        <FILE id="gCiMdr" name="PluginEditor.cpp" compile="1" resource="0"
+              file="Source/PluginEditor.cpp"/>
+        <FILE id="OZldp6" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      </GROUP>
+      <GROUP id="{78E2D0A2-F82B-D4A2-1C57-21363B334EC5}" name="Sequencer">
+        <FILE id="RmZE5s" name="Sequencer.cpp" compile="1" resource="0" file="Source/Sequencer.cpp"/>
+        <FILE id="obyW1c" name="Sequencer.h" compile="0" resource="0" file="Source/Sequencer.h"/>
+      </GROUP>
       <GROUP id="{0A73A1EF-4A25-9E97-BDFE-6C76DB199BE1}" name="GUIComponents">
         <FILE id="kxxo31" name="DragableSource.h" compile="0" resource="0"
               file="Source/DragableSource.h"/>
@@ -62,13 +75,6 @@
         <FILE id="dF7aY3" name="WaveformGen.cpp" compile="1" resource="0" file="Source/WaveformGen.cpp"/>
         <FILE id="Y7oXg0" name="WaveformGen.h" compile="0" resource="0" file="Source/WaveformGen.h"/>
       </GROUP>
-      <FILE id="HZ1r7i" name="PluginProcessor.cpp" compile="1" resource="0"
-            file="Source/PluginProcessor.cpp"/>
-      <FILE id="sYnUWG" name="PluginProcessor.h" compile="0" resource="0"
-            file="Source/PluginProcessor.h"/>
-      <FILE id="gCiMdr" name="PluginEditor.cpp" compile="1" resource="0"
-            file="Source/PluginEditor.cpp"/>
-      <FILE id="OZldp6" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>

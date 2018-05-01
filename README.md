@@ -10,3 +10,7 @@ A pitch tracker that can analyze monophonic audio input and map the extracted pi
 ### The speech sythnesis
 
 Referencing Neil Thapen's (https://dood.al/pinktrombone/) web audio implementation of procedural speech synthesis, and we translate javascript code into c++ code in an API fashion.
+
+### Build instruction
+
+open NosyAspiration.jucer project file, and open IDE from projucer to build it.
