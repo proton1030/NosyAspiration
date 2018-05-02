@@ -1,6 +1,10 @@
 # NosyAspiration
 An audio effect plugin sings with an audio input's pitch. 
 
+### Link to Introduction Vid:
+
+[![pic](https://i.vimeocdn.com/video/698111777_1280x720.jpg)](https://vimeo.com/267555841)
+
 ### Functionality
 
 To add pronuciation to the step sequencer, drag pronunciation on the right to the middle drop box, dropped pronounciation will be added to step sequencer on the left. 
