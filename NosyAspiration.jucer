@@ -10,15 +10,19 @@
               pluginCode="Hjli" pluginChannelConfigs="" pluginIsSynth="0" pluginWantsMidiIn="0"
               pluginProducesMidiOut="0" pluginIsMidiEffectPlugin="0" pluginEditorRequiresKeys="0"
               pluginAUExportPrefix="NosyAspirationAU" aaxIdentifier="com.yourcompany.NosyAspiration"
-              pluginAAXCategory="2" jucerVersion="5.3.1" pluginFormats="buildVST,buildAU,buildStandalone">
+              pluginAAXCategory="2" jucerVersion="5.4.5" pluginFormats="buildVST,buildAU,buildStandalone">
   <MAINGROUP id="isGQd8" name="NosyAspiration">
     <GROUP id="{05C8520D-07ED-5269-2489-E7978BC9BAB8}" name="Assets">
-      <FILE id="PkXxix" name="Chalkduster.ttf" compile="0" resource="1" file="/Library/Fonts/Chalkduster.ttf"/>
       <FILE id="GeEm5t" name="background.jpg" compile="0" resource="1" file="Assets/background.jpg"/>
+      <FILE id="Qf9wTE" name="Chalkduster.ttf" compile="0" resource="1" file="Assets/Chalkduster.ttf"/>
       <FILE id="pCdQdX" name="omnes-semibold-webfont.ttf" compile="0" resource="1"
             file="Assets/omnes-semibold-webfont.ttf"/>
     </GROUP>
     <GROUP id="{BA961BA5-35EA-60B5-18E2-2140209EAF20}" name="Source">
+      <GROUP id="{1658C4A6-D20A-AFB3-3F70-3EFE611263A1}" name="Utils">
+        <FILE id="ws3agz" name="Interpolater.h" compile="0" resource="0" file="Source/Interpolater.h"/>
+        <FILE id="K8YOFz" name="RingBuffer.h" compile="0" resource="0" file="Source/RingBuffer.h"/>
+      </GROUP>
       <GROUP id="{15B78884-0C81-01B3-9133-5A8DEB2D02F3}" name="JuceTemplate">
         <FILE id="HZ1r7i" name="PluginProcessor.cpp" compile="1" resource="0"
               file="Source/PluginProcessor.cpp"/>
@@ -122,4 +126,7 @@
     <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
   </MODULES>
   <JUCEOPTIONS JUCE_QUICKTIME="disabled"/>
+  <LIVE_SETTINGS>
+    <OSX/>
+  </LIVE_SETTINGS>
 </JUCERPROJECT>

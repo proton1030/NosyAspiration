@@ -11,64 +11,69 @@
 #include "PitchTrack.h"
 #include <cmath>
 PitchTrack::PitchTrack():
-m_fft(0),
-m_blockLength(0),
-m_sampleRate(0),
-m_fftSize(0),
-m_fftBuff(0),
-m_acfBuff(0)
+block_size(0),
+sample_rate(0),
+fft_size(0),
+fft_counter(0)
 {
 
 }
 
-PitchTrack::~PitchTrack()
+void PitchTrack::init(int block_size, int sample_rate, int fft_size)
 {
-    delete [] m_acfBuff;
-    delete [] m_fftBuff;
-    m_fft->~FFT();
+    this->block_size = block_size;
+    this->sample_rate = sample_rate;
+    float order = ceil(log2(fft_size)) + 1;
+    fft = std::make_unique<dsp::FFT>(order);
+    this->fft_size = fft->getSize();
+    fft_buff.reserve(fft_size * 2);
 }
 
-
-void PitchTrack::init(int blockLength, int sampleRate) {
-    m_blockLength = blockLength;
-    m_sampleRate = sampleRate;
-    float order = ceil(log2(blockLength)) + 1;
-    m_fft = new FFT(order);
-    m_fftSize = m_fft->getSize();
-    m_fftBuff = new float[m_fftSize * 2];
-    m_acfBuff = new float[m_blockLength];
-}
-
-void PitchTrack::computeAcf(float *inputBuff) {
-    memcpy(m_fftBuff, inputBuff, sizeof(float) * m_blockLength);
-    m_fft->performRealOnlyForwardTransform(m_fftBuff);
-    for (int i = 0; i < m_fftSize * 2; i+=2) {
+void PitchTrack::computeAcf()
+{
+    fft->performRealOnlyForwardTransform(&fft_buff[0]);
+    for (int i = 0; i < fft_size * 2; i+=2)
+    {
         // calculate conjugate element wise mulitply
-        m_fftBuff[i] = m_fftBuff[i] * m_fftBuff[i] + m_fftBuff[i+1] * m_fftBuff[i+1];
+        fft_buff[i] = fft_buff[i] * fft_buff[i] + fft_buff[i+1] * fft_buff[i+1];
         // seting imagine part to zero
-        m_fftBuff[i+1] = 0;
+        fft_buff[i+1] = 0;
     }
-    m_fft->performRealOnlyInverseTransform(m_fftBuff);
-    memcpy(m_acfBuff, m_fftBuff, sizeof(float) * m_blockLength);
-    memset(m_fftBuff, 0, sizeof(float) * m_fftSize * 2);
+    fft->performRealOnlyInverseTransform(&fft_buff[0]);
 }
 
-float PitchTrack::getFundamentalFreq(float *inputBuff) {
-    computeAcf(inputBuff);
-    int start = 0;
-    for (int i = 20; i < m_blockLength; i++) {
-        if (m_acfBuff[i] > m_acfBuff[i-10]) {
-            start = i;
-            break;
+std::vector<std::pair<int, float>> PitchTrack::getFundamentalFreq(float *inputBuff)
+{
+    std::vector<std::pair<int, float>> res;
+    for (int i = 0; i < block_size; i++)
+    {
+        fft_buff[fft_counter] = delay_line->getPostInc();
+        delay_line->putPostInc(inputBuff[i]);
+        if (fft_counter == fft_size)
+        {
+            computeAcf();
+            int start = 0;
+            for (int i = 20; i < block_size; i++)
+            {
+                if (fft_buff[i] > fft_buff[i-10])
+                {
+                    start = i;
+                    break;
+                }
+            }
+            float lag = 0;
+            float max_peak = 0;
+            for (int i = start; i < block_size; i++)
+            {
+                if(fft_buff[i] > max_peak)
+                {
+                    max_peak = fft_buff[i];
+                    lag = i;
+                }
+            }
+            std::pair<int, float> pair {i, sample_rate / (lag - 1.0f)};
+            res.push_back(pair);
         }
     }
-    float lag = 0;
-    float max_peak = 0;
-    for (int i= start; i < m_blockLength; i++) {
-        if (m_acfBuff[i] > max_peak) {
-            max_peak = m_acfBuff[i];
-            lag = i;
-        }
-    }
-    return m_sampleRate / (lag - 1.0f);
+    return res;
 }
